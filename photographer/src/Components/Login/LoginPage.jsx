@@ -69,7 +69,7 @@ const LoginPage = () => {
                 Login
               </Button>
               <Typography variant="body2" sx={{ color: "#aaa" }}>
-                Don’t have an Account ? <a href="#" style={{ color: "#1976d2" }}>Sign up</a>
+                Don’t have an Account ? <a href="/SignUp" style={{ color: "#1976d2" }}>Sign up</a>
               </Typography>
             </Box>
           </Box>
