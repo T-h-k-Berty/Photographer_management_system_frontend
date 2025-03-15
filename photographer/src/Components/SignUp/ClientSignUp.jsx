@@ -1,11 +1,70 @@
-import React from "react";
-import { Grid, Typography, Box, Button, TextField } from "@mui/material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Grid, Typography, Box, Button, TextField, Alert } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import "bootstrap/dist/css/bootstrap.min.css";
 import backgroundImg from "../SignUp/background.png";
 
 const ClientSignUp = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    profilePicture: null,
+  });
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    if (e.target.name === "profilePicture") {
+      setFormData({ ...formData, profilePicture: e.target.files[0] });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+
+    // ✅ Validation: Check if passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+    }
+
+    // ✅ Validation: Check password length (minimum 8 characters)
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    data.append("role", "client"); // Auto-set role to "client"
+    if (formData.profilePicture) {
+      data.append("profilePicture", formData.profilePicture);
+    }
+
+    try {
+      await axios.post("http://localhost:5000/api/auth/register", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setMessage("Account created successfully! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 2000);
+    } catch (error) {
+      setError(error.response?.data?.message || "Registration failed.");
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -31,12 +90,7 @@ const ClientSignUp = () => {
       >
         {/* Back Button */}
         <Box mb={2}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            variant="text"
-            sx={{ color: "white", fontWeight: "bold" }}
-            onClick={() => window.history.back()}
-          >
+          <Button startIcon={<ArrowBackIcon />} variant="text" sx={{ color: "white", fontWeight: "bold" }} onClick={() => window.history.back()}>
             Back
           </Button>
         </Box>
@@ -46,99 +100,46 @@ const ClientSignUp = () => {
           <PeopleIcon sx={{ fontSize: 80, color: "white" }} />
         </Box>
 
+        {/* Display Error or Success Message */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        {message && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {message}
+          </Alert>
+        )}
+
         {/* Form Fields */}
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              Name
-            </Typography>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Enter your name"
-              InputProps={{
-                sx: { backgroundColor: "#444", color: "white" },
-              }}
-            />
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField fullWidth name="name" variant="outlined" placeholder="Enter your name" onChange={handleChange} InputProps={{ sx: { backgroundColor: "#444", color: "white" } }} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth name="email" variant="outlined" placeholder="Enter your email" onChange={handleChange} InputProps={{ sx: { backgroundColor: "#444", color: "white" } }} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth name="password" type="password" variant="outlined" placeholder="Enter your password" onChange={handleChange} InputProps={{ sx: { backgroundColor: "#444", color: "white" } }} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth name="confirmPassword" type="password" variant="outlined" placeholder="Re-enter your password" onChange={handleChange} InputProps={{ sx: { backgroundColor: "#444", color: "white" } }} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth type="file" variant="outlined" onChange={handleChange} name="profilePicture" InputLabelProps={{ shrink: true }} InputProps={{ sx: { backgroundColor: "#444", color: "white", borderRadius: "5px" } }} />
+            </Grid>
           </Grid>
 
-          <Grid item xs={12}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              Email
-            </Typography>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Enter your email"
-              InputProps={{
-                sx: { backgroundColor: "#444", color: "white" },
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              Password
-            </Typography>
-            <TextField
-              fullWidth
-              type="password"
-              variant="outlined"
-              placeholder="Enter your password"
-              InputProps={{
-                sx: { backgroundColor: "#444", color: "white" },
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              Re-enter Password
-            </Typography>
-            <TextField
-              fullWidth
-              type="password"
-              variant="outlined"
-              placeholder="Re-enter your password"
-              InputProps={{
-                sx: { backgroundColor: "#444", color: "white" },
-              }}
-            />
-          </Grid>
-
-           <Grid item xs={12}>
-                      <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                        Profile Picture
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        type="file"
-                        variant="outlined"
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                          sx: { backgroundColor: "#444", color: "white", borderRadius: "5px" },
-                        }}
-                      />
-                    </Grid>
-        </Grid>
-
-        {/* Create Account Button */}
-        <Box textAlign="center" mt={3}>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "white",
-              color: "black",
-              fontWeight: "bold",
-              borderRadius: "30px",
-              px: 5,
-              py: 1,
-              ":hover": { backgroundColor: "#ddd" },
-            }}
-          >
-            Create Account
-          </Button>
-        </Box>
+          {/* Create Account Button */}
+          <Box textAlign="center" mt={3}>
+            <Button type="submit" variant="contained" sx={{ backgroundColor: "white", color: "black", fontWeight: "bold", borderRadius: "30px", px: 5, py: 1, ":hover": { backgroundColor: "#ddd" } }}>
+              Create Account
+            </Button>
+          </Box>
+        </form>
       </Box>
     </Box>
   );

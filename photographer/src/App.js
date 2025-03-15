@@ -14,7 +14,7 @@ const App = () => {
     <Router>
       <Routes>
         {/* Default Route */}
-        <Route path="/" element={<TopBar />} />
+        <Route path="/topbar" element={<TopBar />} />
 
         {/* Login Page Route */}
         <Route path="/login" element={<LoginPage />} />

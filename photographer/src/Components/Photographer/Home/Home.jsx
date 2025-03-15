@@ -4,7 +4,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import "bootstrap/dist/css/bootstrap.min.css";
 import backgroundImg from "../Home/home.jpg";
 import TopBar from "../TopBar/TopBar";
-
+import PopularPhotographers from "../Popular_Phptographer/PopularPhotographer";
 const Home = () => {
   return (
     <>
@@ -97,6 +97,9 @@ const Home = () => {
           </Button>
         </Box>
       </Box>
+
+      {/* Popular Photographers Section */}
+      <PopularPhotographers />
     </>
   );
 };
