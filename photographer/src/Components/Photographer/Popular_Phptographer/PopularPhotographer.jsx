@@ -1,130 +1,175 @@
-import React from "react";
-import { Box, Card, CardMedia, CardContent, Typography, Grid, Rating } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  Box,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Grid,
+  Rating,
+  Chip,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// Import local images
-import image1 from "../Popular_Phptographer/Img-03.jpg"; // Replace with your image file
-import image2 from "../Popular_Phptographer/Img-02.jpg";   // Replace with your image file
-import image3 from "../Popular_Phptographer/Img-01.jpg"; // Replace with your image file
-
-const photographers = [
-  {
-    name: "Oliver James",
-    category: "Nature Photography",
-    image: image1,
-    stars: 5,
-    description: "Capturing breathtaking landscapes and wildlife.",
-  },
-  {
-    name: "Maya Levine",
-    category: "Wedding Photography",
-    image: image2,
-    stars: 4,
-    description: "Creating timeless memories of your special day.",
-  },
-  {
-    name: "Sophia Kim",
-    category: "Event Photography",
-    image: image3,
-    stars: 5,
-    description: "Documenting unforgettable moments and celebrations.",
-  },
-];
-
 const PopularPhotographers = () => {
+  const [photographers, setPhotographers] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPhotographers = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/users/photographers");
+        const sorted = res.data.sort((a, b) => b.rating - a.rating);
+        setPhotographers(sorted);
+      } catch (error) {
+        console.error("Error fetching photographers:", error);
+      }
+    };
+    fetchPhotographers();
+  }, []);
+
+  const handleRatingSubmit = async (photographerId, newRating) => {
+    try {
+      await axios.post(`http://localhost:5000/api/users/rate/${photographerId}`, { rating: newRating });
+      const res = await axios.get("http://localhost:5000/api/users/photographers");
+      const sorted = res.data.sort((a, b) => b.rating - a.rating);
+      setPhotographers(sorted);
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+    }
+  };
+
+  const handleCardClick = (photographer) => {
+    navigate(`/photographer/portfolio/${photographer.id}`);
+  };
+
+  const getMedal = (index) => {
+    if (index < 10) return { label: "Gold Medalist", icon: "🥇", color: "#FFD700" };
+    if (index < 20) return { label: "Silver Medalist", icon: "🥈", color: "#C0C0C0" };
+    return { label: "Photographer", icon: "🎖️", color: "#999" };
+  };
+
   return (
     <Box
       sx={{
         textAlign: "center",
-        backgroundColor: "#101010",
+        background: "linear-gradient(145deg, #111, #1c1c1c)",
         py: 6,
         color: "white",
         fontFamily: "'Poppins', sans-serif",
+        minHeight: "100vh",
       }}
     >
       <Typography
-        variant="h4"
+        variant="h3"
         sx={{
           fontWeight: "bold",
           mb: 5,
           letterSpacing: "2px",
-          color: "white",
+          color: "#ffffff",
           textTransform: "uppercase",
         }}
       >
         Popular Photographers
       </Typography>
-      <Grid container spacing={4} justifyContent="center">
-        {photographers.map((photographer, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card
-              sx={{
-                maxWidth: 350,
-                backgroundColor: "#1a1a1a",
-                borderRadius: "20px",
-                overflow: "hidden",
-                transition: "transform 0.3s, box-shadow 0.3s",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: "0 10px 20px rgba(0, 0, 0, 0.5)",
-                },
-              }}
-            >
-              <CardMedia
-                component="img"
-                height="250"
-                image={photographer.image}
-                alt={photographer.name}
+
+      <Grid
+        container
+        spacing={4}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ maxWidth: "1300px", margin: "0 auto", px: 2 }}
+      >
+        {photographers.map((photographer, index) => {
+          const medal = getMedal(index);
+          return (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Card
                 sx={{
-                  filter: "brightness(0.9)",
-                  transition: "filter 0.3s",
+                  maxWidth: 370,
+                  height: "100%",
+                   mx: "auto",
+                  borderRadius: "24px",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.6)",
+                  overflow: "hidden",
+                  transition: "transform 0.4s, box-shadow 0.4s",
                   "&:hover": {
-                    filter: "brightness(1.1)",
+                    transform: "scale(1.06)",
+                    boxShadow: "0 12px 28px rgba(0, 0, 0, 0.7)",
                   },
+                  cursor: "pointer",
+                  border: `2px solid ${medal.color}`,
+                  position: "relative",
                 }}
-              />
-              <CardContent sx={{ textAlign: "center", p: 3 }}>
-                <Typography
-                  variant="body2"
+                onClick={() => handleCardClick(photographer)}
+              >
+                <CardMedia
+                  component="img"
+                  height="240"
+                  image={`http://localhost:5000/uploads/${photographer.profilePicture}`}
+                  alt={photographer.name}
                   sx={{
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                    color: "#aaa",
-                    mb: 1,
+                    filter: "brightness(0.85)",
+                    transition: "filter 0.3s",
+                    "&:hover": {
+                      filter: "brightness(1)",
+                    },
                   }}
-                >
-                  {photographer.category}
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    mt: 1,
-                    fontWeight: "bold",
-                    color: "white",
-                  }}
-                >
-                  {photographer.name}
-                </Typography>
-                <Rating
-                  value={photographer.stars}
-                  readOnly
-                  precision={0.5}
-                  sx={{ mt: 1, color: "#ffd700" }}
                 />
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mt: 2,
-                    fontSize: "0.9rem",
-                    color: "#ccc",
-                  }}
-                >
-                  {photographer.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                <CardContent sx={{ textAlign: "center", p: 3 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      color: "#bbb",
+                      mb: 1,
+                    }}
+                  >
+                    {photographer.role}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#ffffff",
+                      mb: 1,
+                      fontSize: "1.3rem",
+                    }}
+                  >
+                    {photographer.name}
+                  </Typography>
+                  <Rating
+                    value={photographer.rating}
+                    precision={0.5}
+                    onChange={(e, newValue) =>
+                      handleRatingSubmit(photographer.id, newValue)
+                    }
+                    sx={{ mt: 1, color: "#fdd835" }}
+                  />
+                  <Typography variant="caption" sx={{ color: "#ccc", mt: 1 }}>
+                    {photographer.rating.toFixed(1)} / 5 ({photographer.ratingCount} ratings)
+                  </Typography>
+
+                  <Chip
+                    label={`${medal.icon} ${medal.label}`}
+                    sx={{
+                      mt: 2,
+                      backgroundColor: medal.color,
+                      color: "#000",
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
     </Box>
   );

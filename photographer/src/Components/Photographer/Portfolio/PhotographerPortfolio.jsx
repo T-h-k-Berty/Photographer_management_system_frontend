@@ -1,4 +1,3 @@
-// === ViewPortfolio.jsx ===
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -10,36 +9,52 @@ import {
   CardContent,
   Paper,
   Divider,
-  Slide,
-  Fade,
   Zoom,
   IconButton,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  Rating,
+  Button,
 } from "@mui/material";
-import DownloadIcon from '@mui/icons-material/Download';
-import { useNavigate } from "react-router-dom";
+import DownloadIcon from "@mui/icons-material/Download";
+import { useParams } from "react-router-dom";
 import TopBar from "../TopBar/TopBar";
+import StarIcon from "@mui/icons-material/Star";
 import RedeemIcon from "@mui/icons-material/Redeem"; // 📦 Add this to your imports
 
 
-const ViewPortfolio = () => {
+const PhotographerPortfolio = () => {
   const [portfolio, setPortfolio] = useState(null);
   const [darkMode, setDarkMode] = useState(true);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const navigate = useNavigate();
+  const [userRating, setUserRating] = useState(0);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/portfolios?userId=${user.id}`);
-        setPortfolio(res.data[0]);
+        const res = await axios.get(`http://localhost:5000/api/portfolios/user/${id}`);
+        setPortfolio(res.data);
       } catch (err) {
         console.error("Failed to fetch portfolio", err);
       }
     };
     fetchPortfolio();
-  }, [user.id]);
+  }, [id]);
+
+  const handleRatingSubmit = async () => {
+    try {
+      await axios.post(`http://localhost:5000/api/users/rate/${portfolio.userId}`, {
+        rating: userRating,
+      });
+      setRatingSubmitted(true);
+
+      const res = await axios.get(`http://localhost:5000/api/portfolios/user/${id}`);
+      setPortfolio(res.data);
+    } catch (error) {
+      console.error("Failed to submit rating", error);
+    }
+  };
 
   const downloadImageWithWatermark = async (imageUrl, watermarkText) => {
     const img = new Image();
@@ -75,7 +90,8 @@ const ViewPortfolio = () => {
   };
   
 
-  if (!portfolio) return <Typography>Loading...</Typography>;
+  if (!portfolio)
+    return <Typography sx={{ mt: 10, textAlign: "center" }}>Loading portfolio...</Typography>;
 
   const theme = {
     background: darkMode ? "#121212" : "#f4f4f4",
@@ -96,7 +112,6 @@ const ViewPortfolio = () => {
       <Box sx={{ pt: 12, backgroundColor: theme.background, color: theme.textPrimary, minHeight: "100vh", px: 4 }}>
         <FormControlLabel control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />} label="Dark Mode" sx={{ position: "absolute", top: 90, right: 30 }} />
 
-        {/* Profile Section */}
         <Zoom in timeout={1000}>
           <Paper elevation={10} sx={{ borderRadius: 4, p: 6, textAlign: "center", maxWidth: 1100, mx: "auto", mt: 6, backgroundColor: theme.paper, boxShadow: `0 20px 50px ${theme.shadow}`, position: "relative" }}>
             <Box component="img" src={`http://localhost:5000/uploads/${portfolio.backgroundPicture}`} sx={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.05, zIndex: 0 }} />
@@ -116,7 +131,67 @@ const ViewPortfolio = () => {
 </Typography>
 
               <Typography variant="subtitle1" sx={{ color: theme.textSecondary }}>{portfolio.photographerName}</Typography>
-              <Typography variant="body2" sx={{ mt: 1, color: theme.textSecondary, maxWidth: 800, mx: "auto" }}>{portfolio.photographerDescription}</Typography>
+
+              <Box mt={2} display="flex" flexDirection="column" alignItems="center">
+  <Typography variant="body2" sx={{ color: theme.textSecondary, mb: 1 }}>
+    Rating: {portfolio.User?.rating?.toFixed(1) || "0.0"} / 5 ({portfolio.User?.ratingCount || 0} ratings)
+  </Typography>
+
+  {!ratingSubmitted ? (
+    <>
+      <Rating
+        value={userRating}
+        onChange={(e, newValue) => setUserRating(newValue)}
+        precision={0.5}
+        sx={{
+          mt: 1,
+          "& .MuiRating-iconFilled": {
+            color: "#fdd835", // bright yellow for better contrast
+          },
+          "& .MuiRating-iconEmpty": {
+            color: theme.textSecondary,
+          },
+        }}
+      />
+      <Button
+        variant="contained"
+        startIcon={<StarIcon />}
+        sx={{
+          mt: 1.5,
+          fontWeight: "bold",
+          background: "linear-gradient(135deg, #ffca28, #f57f17)",
+          color: "#000",
+          px: 3,
+          py: 1,
+          borderRadius: "30px",
+          boxShadow: darkMode
+            ? "0 4px 15px rgba(255, 202, 40, 0.3)"
+            : "0 4px 12px rgba(245, 127, 23, 0.3)",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            background: "linear-gradient(135deg, #fdd835, #ff6f00)",
+            transform: "translateY(-2px)",
+          },
+          "&:disabled": {
+            background: "#ccc",
+            color: "#666",
+            cursor: "not-allowed",
+          },
+        }}
+        onClick={handleRatingSubmit}
+        disabled={userRating === 0}
+      >
+        Submit Rating
+      </Button>
+    </>
+  ) : (
+    <Typography variant="body2" sx={{ mt: 1, color: "#4caf50" }}>
+      Thank you for rating!
+    </Typography>
+  )}
+</Box>
+
+
               <Box mt={2} display="flex" justifyContent="center" flexWrap="wrap" gap={1}>
                 {portfolio.selectedEvents.map((event, i) => (
                   <Box key={i} sx={{ px: 2.5, py: 0.8, backgroundColor: theme.tagBg, borderRadius: "999px", color: theme.tagColor, fontWeight: 500, fontSize: "0.85rem" }}>{event}</Box>
@@ -129,7 +204,6 @@ const ViewPortfolio = () => {
           </Paper>
         </Zoom>
 
-        {/* Gallery Section */}
         <Box mt={10}>
   <Typography
     variant="h4"
@@ -227,6 +301,7 @@ const ViewPortfolio = () => {
               <DownloadIcon />
             </IconButton>
 
+          
           </Box>
         </Grid>
       ))
@@ -235,7 +310,6 @@ const ViewPortfolio = () => {
 </Box>
 
 
-        {/* Package Section */}
         <Box mt={10}>
   <Typography
     variant="h4"
@@ -340,7 +414,6 @@ const ViewPortfolio = () => {
 </Box>
 
 
-        {/* Footer */}
         <Box mt={12} py={5} textAlign="center" borderTop={`1px solid ${theme.border}`} color={theme.textSecondary}>
           <Typography variant="body2">© {new Date().getFullYear()} EventClick – Showcase. Inspire. Connect.</Typography>
         </Box>
@@ -349,4 +422,4 @@ const ViewPortfolio = () => {
   );
 };
 
-export default ViewPortfolio;
+export default PhotographerPortfolio;

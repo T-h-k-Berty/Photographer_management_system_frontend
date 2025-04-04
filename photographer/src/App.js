@@ -9,6 +9,7 @@ import Home from "./Components/Photographer/Home/Home";
 import PopularPhotographers from "./Components/Photographer/Popular_Phptographer/PopularPhotographer";
 import CreatePortfolio from "./Components/Photographer/Portfolio/CreatePortfolio";
 import ViewPortfolio from "./Components/Photographer/Portfolio/ViewPortfolio";
+import PhotographerPortfolio from "./Components/Photographer/Portfolio/PhotographerPortfolio";
 import "./Style/main.css";                             // Custom Styles
 
 const App = () => {
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/PopularPhotographer" element={<PopularPhotographers />} />
         <Route path="/photographer/portfolio" element={<CreatePortfolio />} />
         <Route path="/photographer/view-portfolio" element={<ViewPortfolio />} />
+        <Route path="/photographer/portfolio/:id" element={<PhotographerPortfolio />} />
         
 
 
