@@ -90,6 +90,20 @@ const ViewPortfolio = () => {
     shadow: darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.1)",
   };
 
+  const getProfilePictureUrl = (profilePicture) => {
+  if (!profilePicture) {
+    return "https://via.placeholder.com/240"; // Default image
+  }
+
+  // Remove "uploads/" if already exists
+  const filename = profilePicture.includes("uploads/")
+    ? profilePicture.split("uploads/")[1]
+    : profilePicture;
+
+  return `http://localhost:5000/uploads/${filename}`;
+};
+
+
   return (
     <>
       <TopBar />

@@ -10,6 +10,7 @@ import PopularPhotographers from "./Components/Photographer/Popular_Phptographer
 import CreatePortfolio from "./Components/Photographer/Portfolio/CreatePortfolio";
 import ViewPortfolio from "./Components/Photographer/Portfolio/ViewPortfolio";
 import PhotographerPortfolio from "./Components/Photographer/Portfolio/PhotographerPortfolio";
+import EditProfile from "./Components/Edit_Profile/EditProfile";
 import "./Style/main.css";                             // Custom Styles
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/photographer/portfolio" element={<CreatePortfolio />} />
         <Route path="/photographer/view-portfolio" element={<ViewPortfolio />} />
         <Route path="/photographer/portfolio/:id" element={<PhotographerPortfolio />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
         
 
 

@@ -45,6 +45,16 @@ const PopularPhotographers = () => {
     navigate(`/photographer/portfolio/${photographer.id}`);
   };
 
+  const getProfilePictureUrl = (profilePicture) => {
+    if (!profilePicture) {
+      return "https://via.placeholder.com/300x300.png?text=No+Image"; 
+    }
+
+    // Replace backslashes (\) with slashes (/) for correct browser URL
+    const correctedPath = profilePicture.replace(/\\/g, "/");
+    return `http://localhost:5000/${correctedPath}`;
+  };
+
   const getMedal = (index) => {
     if (index < 10) return { label: "Gold Medalist", icon: "🥇", color: "#FFD700" };
     if (index < 20) return { label: "Silver Medalist", icon: "🥈", color: "#C0C0C0" };
@@ -90,7 +100,7 @@ const PopularPhotographers = () => {
                 sx={{
                   maxWidth: 370,
                   height: "100%",
-                   mx: "auto",
+                  mx: "auto",
                   borderRadius: "24px",
                   background: "rgba(255, 255, 255, 0.05)",
                   backdropFilter: "blur(8px)",
@@ -110,16 +120,22 @@ const PopularPhotographers = () => {
                 <CardMedia
                   component="img"
                   height="240"
-                  image={`http://localhost:5000/uploads/${photographer.profilePicture}`}
-                  alt={photographer.name}
+                  image={getProfilePictureUrl(photographer.profilePicture)}
+                  alt={photographer.name || "Photographer"}
                   sx={{
+                    objectFit: "cover",
                     filter: "brightness(0.85)",
                     transition: "filter 0.3s",
                     "&:hover": {
                       filter: "brightness(1)",
                     },
                   }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://via.placeholder.com/300x300.png?text=No+Image"; 
+                  }}
                 />
+
                 <CardContent sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="body2"
@@ -152,7 +168,7 @@ const PopularPhotographers = () => {
                     sx={{ mt: 1, color: "#fdd835" }}
                   />
                   <Typography variant="caption" sx={{ color: "#ccc", mt: 1 }}>
-                    {photographer.rating.toFixed(1)} / 5 ({photographer.ratingCount} ratings)
+                    {photographer.rating?.toFixed(1) ?? "0.0"} / 5 ({photographer.ratingCount ?? 0} ratings)
                   </Typography>
 
                   <Chip
