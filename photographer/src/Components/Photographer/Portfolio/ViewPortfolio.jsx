@@ -113,44 +113,167 @@ const ViewPortfolio = () => {
 };
 
 
-  return (
-    <>
-      <TopBar />
-      <Box sx={{ pt: 12, backgroundColor: theme.background, color: theme.textPrimary, minHeight: "100vh", px: 4 }}>
-        <FormControlLabel control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />} label="Dark Mode" sx={{ position: "absolute", top: 90, right: 30 }} />
+return (
+  <>
+    <TopBar />
+    <Box sx={{ pt: 12, backgroundColor: theme.background, color: theme.textPrimary, minHeight: "100vh", px: 4 }}>
+      <FormControlLabel
+        control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />}
+        label="Dark Mode"
+        sx={{ position: "absolute", top: 90, right: 30 }}
+      />
 
-        {/* Profile Section */}
-        <Zoom in timeout={1000}>
-          <Paper elevation={10} sx={{ borderRadius: 4, p: 6, textAlign: "center", maxWidth: 1100, mx: "auto", mt: 6, backgroundColor: theme.paper, boxShadow: `0 20px 50px ${theme.shadow}`, position: "relative" }}>
-            <Box component="img" src={`http://localhost:5000/uploads/${portfolio.backgroundPicture}`} sx={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.05, zIndex: 0 }} />
-            <Box sx={{ position: "relative", zIndex: 2 }}>
-              <Avatar src={`http://localhost:5000/uploads/${portfolio.profilePicture}`} sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: `4px solid ${theme.tagBg}`, boxShadow: `0 0 20px ${theme.shadow}` }} />
-              <Typography
-  variant="h4"
-  fontWeight="bold"
+<Zoom in timeout={1000}>
+<Paper
+  elevation={10}
   sx={{
-    color: darkMode ? "#ffffff" : "#000",
-    textShadow: darkMode ? "2px 2px 6px rgba(0,0,0,0.5)" : "none",
-    fontSize: "2.2rem",
-    mb: 1,
+    borderRadius: 4,
+    p: 0,
+    maxWidth: 1100,
+    mx: "auto",
+    mt: 6,
+    backgroundColor: theme.paper,
+    boxShadow: `0 20px 50px ${theme.shadow}`,
+    overflow: "hidden",
+    position: "relative",
   }}
 >
-  {portfolio.shopName}
+  {/* 🔳 Background Photo as Top Half */}
+  <Box
+    component="img"
+    src={`http://localhost:5000/uploads/${portfolio.backgroundPicture}`}
+    sx={{
+      width: "100%",
+      height: "200px",
+      objectFit: "cover",
+      display: "block",
+    }}
+  />
+
+  {/* Content section under background */}
+  <Box sx={{ px: 4, pb: 5, pt: 2 }}>
+    <Grid container spacing={3} alignItems="center">
+      {/* 📸 Profile Picture */}
+      <Grid item xs={12} md={3} textAlign="center" sx={{ mt: -10 }}>
+        <Avatar
+          src={`http://localhost:5000/uploads/${portfolio.profilePicture}`}
+          sx={{
+            width: 160,
+            height: 160,
+            border: `5px solid ${theme.background}`,
+            boxShadow: "0 8px 20px rgba(0,0,0,0.5)",
+            mx: "auto",
+          }}
+        />
+      </Grid>
+
+      {/* 🔠 Text & Rating */}
+      <Grid item xs={12} md={9} sx={{ textAlign: { xs: "center", md: "left" } }}>
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          sx={{
+            color: theme.textPrimary,
+            textShadow: "1px 1px 3px rgba(0,0,0,0.3)",
+            mb: 0.5,
+          }}
+        >
+          {portfolio.shopName}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ color: theme.textSecondary }}>
+          {portfolio.photographerName}
+        </Typography>
+        <Typography variant="body2" sx={{ color: theme.textSecondary }}>
+          Rating: {portfolio.User?.rating?.toFixed(1) || "0.0"} / 5 ({portfolio.User?.ratingCount || 0} ratings)
+        </Typography>
+
+      </Grid>
+    </Grid>
+
+    {/* 🎯 Tags & Locations */}
+    <Box mt={1} textAlign="center">
+      <Box display="inline-flex" flexWrap="wrap" gap={1} justifyContent="center">
+        {portfolio.selectedEvents.map((event, i) => (
+          <Box
+            key={i}
+            sx={{
+              px: 2.5,
+              py: 0.8,
+              backgroundColor: theme.tagBg,
+              borderRadius: "999px",
+              color: theme.tagColor,
+              fontWeight: 500,
+              fontSize: "0.85rem",
+            }}
+          >
+            {event}
+          </Box>
+        ))}
+      </Box>
+
+      <Typography
+variant="body2"
+sx={{
+  mt: 2,
+  fontSize: "1rem",
+  fontWeight: 500,
+  color: darkMode ? "#ffffff" : "#333333",
+  textAlign: "center",
+  letterSpacing: "0.5px",
+  lineHeight: 1.6,
+}}
+>
+{portfolio.locations.map((loc, i) => (
+  <span key={i}>
+    {loc}
+    {i < portfolio.locations.length - 1 && <span style={{ margin: "0 8px", color: "#aaa" }}>•</span>}
+  </span>
+))}
 </Typography>
 
-              <Typography variant="subtitle1" sx={{ color: theme.textSecondary }}>{portfolio.photographerName}</Typography>
-              <Typography variant="body2" sx={{ mt: 1, color: theme.textSecondary, maxWidth: 800, mx: "auto" }}>{portfolio.photographerDescription}</Typography>
-              <Box mt={2} display="flex" justifyContent="center" flexWrap="wrap" gap={1}>
-                {portfolio.selectedEvents.map((event, i) => (
-                  <Box key={i} sx={{ px: 2.5, py: 0.8, backgroundColor: theme.tagBg, borderRadius: "999px", color: theme.tagColor, fontWeight: 500, fontSize: "0.85rem" }}>{event}</Box>
-                ))}
-              </Box>
-              <Typography variant="body2" sx={{ mt: 1, color: theme.textSecondary }}>{portfolio.locations.join(", ")}</Typography>
-              <Divider sx={{ my: 3, borderColor: theme.border }} />
-              <Typography variant="body1" sx={{ fontSize: "1rem", lineHeight: 1.8, maxWidth: 800, mx: "auto", color: theme.textSecondary }}>{portfolio.description}</Typography>
-            </Box>
-          </Paper>
-        </Zoom>
+    </Box>
+
+    {/* 📝 Description */}
+    <Divider sx={{ my: -1, borderColor: theme.border }} />
+    <Box
+sx={{
+  mt: 3,
+  display: "flex",
+  justifyContent: "center",
+  animation: "slideInRightToLeft 1s ease-out forwards",
+}}
+>
+<Box
+  sx={{
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "16px",
+    padding: "20px 30px",
+    border: `1px solid ${darkMode ? "#555" : "#ccc"}`,
+    maxWidth: 800,
+    width: "100%",
+    textAlign: "center",
+    color: darkMode ? "#f4f4f4" : "#333",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+    backdropFilter: "blur(4px)",
+  }}
+>
+  <Typography
+    variant="body1"
+    sx={{
+      fontSize: "1rem",
+      lineHeight: 1.8,
+      letterSpacing: "0.3px",
+      fontWeight: 400,
+    }}
+  >
+    {portfolio.description}
+  </Typography>
+</Box>
+</Box>
+
+  </Box>
+</Paper>
+</Zoom>
 
         {/* Gallery Section */}
         {/* Gallery Section - Grouped by Event Type */}

@@ -110,99 +110,202 @@ const PhotographerPortfolio = () => {
     <>
       <TopBar />
       <Box sx={{ pt: 12, backgroundColor: theme.background, color: theme.textPrimary, minHeight: "100vh", px: 4 }}>
-        <FormControlLabel control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />} label="Dark Mode" sx={{ position: "absolute", top: 90, right: 30 }} />
+        <FormControlLabel
+          control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />}
+          label="Dark Mode"
+          sx={{ position: "absolute", top: 90, right: 30 }}
+        />
 
-        <Zoom in timeout={1000}>
-          <Paper elevation={10} sx={{ borderRadius: 4, p: 6, textAlign: "center", maxWidth: 1100, mx: "auto", mt: 6, backgroundColor: theme.paper, boxShadow: `0 20px 50px ${theme.shadow}`, position: "relative" }}>
-            <Box component="img" src={`http://localhost:5000/uploads/${portfolio.backgroundPicture}`} sx={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.05, zIndex: 0 }} />
-            <Box sx={{ position: "relative", zIndex: 2 }}>
-              <Avatar src={`http://localhost:5000/uploads/${portfolio.profilePicture}`} sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: `4px solid ${theme.tagBg}`, boxShadow: `0 0 20px ${theme.shadow}` }} />
-              <Typography
-  variant="h4"
-  fontWeight="bold"
+<Zoom in timeout={1000}>
+  <Paper
+    elevation={10}
+    sx={{
+      borderRadius: 4,
+      p: 0,
+      maxWidth: 1100,
+      mx: "auto",
+      mt: 6,
+      backgroundColor: theme.paper,
+      boxShadow: `0 20px 50px ${theme.shadow}`,
+      overflow: "hidden",
+      position: "relative",
+    }}
+  >
+    {/* 🔳 Background Photo as Top Half */}
+    <Box
+      component="img"
+      src={`http://localhost:5000/uploads/${portfolio.backgroundPicture}`}
+      sx={{
+        width: "100%",
+        height: "200px",
+        objectFit: "cover",
+        display: "block",
+      }}
+    />
+
+    {/* Content section under background */}
+    <Box sx={{ px: 4, pb: 5, pt: 2 }}>
+      <Grid container spacing={3} alignItems="center">
+        {/* 📸 Profile Picture */}
+        <Grid item xs={12} md={3} textAlign="center" sx={{ mt: -10 }}>
+          <Avatar
+            src={`http://localhost:5000/uploads/${portfolio.profilePicture}`}
+            sx={{
+              width: 160,
+              height: 160,
+              border: `5px solid ${theme.background}`,
+              boxShadow: "0 8px 20px rgba(0,0,0,0.5)",
+              mx: "auto",
+            }}
+          />
+        </Grid>
+
+        {/* 🔠 Text & Rating */}
+        <Grid item xs={12} md={9} sx={{ textAlign: { xs: "center", md: "left" } }}>
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            sx={{
+              color: theme.textPrimary,
+              textShadow: "1px 1px 3px rgba(0,0,0,0.3)",
+              mb: 0.5,
+            }}
+          >
+            {portfolio.shopName}
+          </Typography>
+          <Typography variant="subtitle1" sx={{ color: theme.textSecondary }}>
+            {portfolio.photographerName}
+          </Typography>
+          <Typography variant="body2" sx={{ color: theme.textSecondary }}>
+            Rating: {portfolio.User?.rating?.toFixed(1) || "0.0"} / 5 ({portfolio.User?.ratingCount || 0} ratings)
+          </Typography>
+
+          {/* ⭐ Rating Controls */}
+          <Box mt={1}>
+            {!ratingSubmitted ? (
+              <>
+                <Rating
+                  value={userRating}
+                  onChange={(e, newValue) => setUserRating(newValue)}
+                  precision={0.5}
+                  sx={{
+                    "& .MuiRating-iconFilled": { color: "#fdd835" },
+                    "& .MuiRating-iconEmpty": { color: theme.textSecondary },
+                  }}
+                />
+                <Button
+                  startIcon={<StarIcon />}
+                  onClick={handleRatingSubmit}
+                  disabled={userRating === 0}
+                  sx={{
+                    mt: 1,
+                    px: 3,
+                    py: 1,
+                    fontWeight: "bold",
+                    borderRadius: "30px",
+                    background: "linear-gradient(135deg, #fdd835, #ff6f00)",
+                    color: "#000",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #fff176, #f57f17)",
+                      transform: "translateY(-1px)",
+                    },
+                  }}
+                >
+                  Submit Rating
+                </Button>
+              </>
+            ) : (
+              <Typography sx={{ mt: 1, color: "#4caf50" }}>Thank you for rating!</Typography>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
+
+      {/* 🎯 Tags & Locations */}
+      <Box mt={1} textAlign="center">
+        <Box display="inline-flex" flexWrap="wrap" gap={1} justifyContent="center">
+          {portfolio.selectedEvents.map((event, i) => (
+            <Box
+              key={i}
+              sx={{
+                px: 2.5,
+                py: 0.8,
+                backgroundColor: theme.tagBg,
+                borderRadius: "999px",
+                color: theme.tagColor,
+                fontWeight: 500,
+                fontSize: "0.85rem",
+              }}
+            >
+              {event}
+            </Box>
+          ))}
+        </Box>
+
+        <Typography
+  variant="body2"
   sx={{
-    color: darkMode ? "#ffffff" : "#000",
-    textShadow: darkMode ? "2px 2px 6px rgba(0,0,0,0.5)" : "none",
-    fontSize: "2.2rem",
-    mb: 1,
+    mt: 2,
+    fontSize: "1rem",
+    fontWeight: 500,
+    color: darkMode ? "#ffffff" : "#333333",
+    textAlign: "center",
+    letterSpacing: "0.5px",
+    lineHeight: 1.6,
   }}
 >
-  {portfolio.shopName}
+  {portfolio.locations.map((loc, i) => (
+    <span key={i}>
+      {loc}
+      {i < portfolio.locations.length - 1 && <span style={{ margin: "0 8px", color: "#aaa" }}>•</span>}
+    </span>
+  ))}
 </Typography>
 
-              <Typography variant="subtitle1" sx={{ color: theme.textSecondary }}>{portfolio.photographerName}</Typography>
+      </Box>
 
-              <Box mt={2} display="flex" flexDirection="column" alignItems="center">
-  <Typography variant="body2" sx={{ color: theme.textSecondary, mb: 1 }}>
-    Rating: {portfolio.User?.rating?.toFixed(1) || "0.0"} / 5 ({portfolio.User?.ratingCount || 0} ratings)
-  </Typography>
-
-  {!ratingSubmitted ? (
-    <>
-      <Rating
-        value={userRating}
-        onChange={(e, newValue) => setUserRating(newValue)}
-        precision={0.5}
-        sx={{
-          mt: 1,
-          "& .MuiRating-iconFilled": {
-            color: "#fdd835", // bright yellow for better contrast
-          },
-          "& .MuiRating-iconEmpty": {
-            color: theme.textSecondary,
-          },
-        }}
-      />
-      <Button
-        variant="contained"
-        startIcon={<StarIcon />}
-        sx={{
-          mt: 1.5,
-          fontWeight: "bold",
-          background: "linear-gradient(135deg, #ffca28, #f57f17)",
-          color: "#000",
-          px: 3,
-          py: 1,
-          borderRadius: "30px",
-          boxShadow: darkMode
-            ? "0 4px 15px rgba(255, 202, 40, 0.3)"
-            : "0 4px 12px rgba(245, 127, 23, 0.3)",
-          transition: "all 0.3s ease",
-          "&:hover": {
-            background: "linear-gradient(135deg, #fdd835, #ff6f00)",
-            transform: "translateY(-2px)",
-          },
-          "&:disabled": {
-            background: "#ccc",
-            color: "#666",
-            cursor: "not-allowed",
-          },
-        }}
-        onClick={handleRatingSubmit}
-        disabled={userRating === 0}
-      >
-        Submit Rating
-      </Button>
-    </>
-  ) : (
-    <Typography variant="body2" sx={{ mt: 1, color: "#4caf50" }}>
-      Thank you for rating!
+      {/* 📝 Description */}
+      <Divider sx={{ my: -1, borderColor: theme.border }} />
+      <Box
+  sx={{
+    mt: 3,
+    display: "flex",
+    justifyContent: "center",
+    animation: "slideInRightToLeft 1s ease-out forwards",
+  }}
+>
+  <Box
+    sx={{
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      borderRadius: "16px",
+      padding: "20px 30px",
+      border: `1px solid ${darkMode ? "#555" : "#ccc"}`,
+      maxWidth: 800,
+      width: "100%",
+      textAlign: "center",
+      color: darkMode ? "#f4f4f4" : "#333",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+      backdropFilter: "blur(4px)",
+    }}
+  >
+    <Typography
+      variant="body1"
+      sx={{
+        fontSize: "1rem",
+        lineHeight: 1.8,
+        letterSpacing: "0.3px",
+        fontWeight: 400,
+      }}
+    >
+      {portfolio.description}
     </Typography>
-  )}
+  </Box>
 </Box>
 
+    </Box>
+  </Paper>
+</Zoom>
 
-              <Box mt={2} display="flex" justifyContent="center" flexWrap="wrap" gap={1}>
-                {portfolio.selectedEvents.map((event, i) => (
-                  <Box key={i} sx={{ px: 2.5, py: 0.8, backgroundColor: theme.tagBg, borderRadius: "999px", color: theme.tagColor, fontWeight: 500, fontSize: "0.85rem" }}>{event}</Box>
-                ))}
-              </Box>
-              <Typography variant="body2" sx={{ mt: 1, color: theme.textSecondary }}>{portfolio.locations.join(", ")}</Typography>
-              <Divider sx={{ my: 3, borderColor: theme.border }} />
-              <Typography variant="body1" sx={{ fontSize: "1rem", lineHeight: 1.8, maxWidth: 800, mx: "auto", color: theme.textSecondary }}>{portfolio.description}</Typography>
-            </Box>
-          </Paper>
-        </Zoom>
 
         <Box mt={10}>
   <Typography
@@ -425,6 +528,7 @@ const PhotographerPortfolio = () => {
     ))}
   </Grid>
 </Box>
+
 
 
         <Box mt={12} py={5} textAlign="center" borderTop={`1px solid ${theme.border}`} color={theme.textSecondary}>
