@@ -28,12 +28,17 @@ const ClientTopBar = ({ user }) => {
   return (
     <AppBar position="fixed" sx={{ backgroundColor: "#222" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box display="flex" alignItems="center">
-          <CameraAltIcon sx={{ fontSize: 35, color: "white", mr: 1 }} />
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
-            EventClick
-          </Typography>
-        </Box>
+      <Box
+  display="flex"
+  alignItems="center"
+  sx={{ cursor: "pointer" }}
+  onClick={() => navigate("/PhotographerHome")}
+>
+  <CameraAltIcon sx={{ fontSize: 35, color: "white", mr: 1 }} />
+  <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+    EventClick
+  </Typography>
+</Box>
 
         <Grid container spacing={2} alignItems="center" justifyContent="flex-end" sx={{ width: "auto" }}>
           <Grid item>

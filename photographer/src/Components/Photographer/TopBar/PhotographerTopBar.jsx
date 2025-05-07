@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -18,14 +18,34 @@ import axios from "axios";
 
 const PhotographerTopBar = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [hasPortfolio, setHasPortfolio] = useState(false);
   const navigate = useNavigate();
+
+  // Fetch portfolio status on mount
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const res = await axios.get(`http://localhost:5000/api/portfolios/user/${storedUser.id}`);
+        if (res.data) {
+          setHasPortfolio(true);
+        } else {
+          setHasPortfolio(false);
+        }
+      } catch (error) {
+        console.error("Error checking portfolio:", error);
+        setHasPortfolio(false);
+      }
+    };
+
+    fetchPortfolio();
+  }, []);
 
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     navigate("/login");
   };
 
@@ -34,19 +54,11 @@ const PhotographerTopBar = ({ user }) => {
     navigate("/edit-profile");
   };
 
-  const handlePortfolioClick = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const res = await axios.get(`http://localhost:5000/api/portfolios?userId=${user.id}`);
-
-      if (res.data && res.data.length > 0) {
-        navigate("/photographer/view-portfolio");
-      } else {
-        navigate("/photographer/portfolio");
-      }
-    } catch (error) {
-      console.error("Error checking portfolio:", error);
-      navigate("/photographer/portfolio");
+  const handlePortfolioClick = () => {
+    if (hasPortfolio) {
+      navigate("/photographer/view-portfolio");
+    } else {
+      navigate("/photographer/create-portfolio");
     }
   };
 
@@ -54,12 +66,18 @@ const PhotographerTopBar = ({ user }) => {
     <AppBar position="fixed" sx={{ backgroundColor: "#222" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         {/* Logo + Title */}
-        <Box display="flex" alignItems="center">
-          <CameraAltIcon sx={{ fontSize: 35, color: "white", mr: 1 }} />
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
-            EventClick
-          </Typography>
-        </Box>
+        <Box
+  display="flex"
+  alignItems="center"
+  sx={{ cursor: "pointer" }}
+  onClick={() => navigate("/PhotographerHome")}
+>
+  <CameraAltIcon sx={{ fontSize: 35, color: "white", mr: 1 }} />
+  <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+    EventClick
+  </Typography>
+</Box>
+
 
         {/* Navigation Options */}
         <Grid container spacing={2} alignItems="center" justifyContent="flex-end" sx={{ width: "auto" }}>
@@ -75,7 +93,7 @@ const PhotographerTopBar = ({ user }) => {
               sx={{ color: "white", fontWeight: "bold", cursor: "pointer" }}
               onClick={handlePortfolioClick}
             >
-              Portfolio
+              {hasPortfolio ? "View Portfolio" : "Create Portfolio"}
             </Typography>
           </Grid>
 

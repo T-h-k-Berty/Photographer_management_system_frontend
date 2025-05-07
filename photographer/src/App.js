@@ -11,33 +11,30 @@ import CreatePortfolio from "./Components/Photographer/Portfolio/CreatePortfolio
 import ViewPortfolio from "./Components/Photographer/Portfolio/ViewPortfolio";
 import PhotographerPortfolio from "./Components/Photographer/Portfolio/PhotographerPortfolio";
 import EditProfile from "./Components/Edit_Profile/EditProfile";
-import "./Style/main.css";                             // Custom Styles
+import "./Style/main.css";                            
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Default Route */}
-        <Route path="/topbar" element={<TopBar />} />
 
-        {/* Login Page Route */}
+        <Route path="/Topbar" element={<TopBar />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/PhotographerSignUp" element={<PhotographerSignUp />} />
         <Route path="/ClientSignUp" element={<ClientSignUp />} />
         <Route path="/PhotographerHome" element={<Home />} />
         <Route path="/PopularPhotographer" element={<PopularPhotographers />} />
-        <Route path="/photographer/portfolio" element={<CreatePortfolio />} />
+        <Route path="/photographer/create-portfolio" element={<CreatePortfolio />} />
         <Route path="/photographer/view-portfolio" element={<ViewPortfolio />} />
         <Route path="/photographer/portfolio/:id" element={<PhotographerPortfolio />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         
-
-
-  
       </Routes>
     </Router>
   );
 };
 
 export default App;
+
+

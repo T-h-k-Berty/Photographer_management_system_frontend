@@ -9,6 +9,7 @@ import {
   Grid,
   Rating,
   Chip,
+  Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -47,17 +48,15 @@ const PopularPhotographers = () => {
 
   const getProfilePictureUrl = (profilePicture) => {
     if (!profilePicture) {
-      return "https://via.placeholder.com/300x300.png?text=No+Image"; 
+      return "https://via.placeholder.com/300x300.png?text=No+Image";
     }
-
-    // Replace backslashes (\) with slashes (/) for correct browser URL
     const correctedPath = profilePicture.replace(/\\/g, "/");
     return `http://localhost:5000/${correctedPath}`;
   };
 
   const getMedal = (index) => {
-    if (index < 10) return { label: "Gold Medalist", icon: "🥇", color: "#FFD700" };
-    if (index < 20) return { label: "Silver Medalist", icon: "🥈", color: "#C0C0C0" };
+    if (index < 5) return { label: "Gold Medalist", icon: "🥇", color: "#FFD700" };
+    if (index < 10) return { label: "Silver Medalist", icon: "🥈", color: "#C0C0C0" };
     return { label: "Photographer", icon: "🎖️", color: "#999" };
   };
 
@@ -89,18 +88,16 @@ const PopularPhotographers = () => {
         container
         spacing={4}
         justifyContent="center"
-        alignItems="center"
+        alignItems="stretch"
         sx={{ maxWidth: "1300px", margin: "0 auto", px: 2 }}
       >
         {photographers.map((photographer, index) => {
           const medal = getMedal(index);
           return (
-            <Grid item xs={12} sm={6} md={3} key={index}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               <Card
                 sx={{
-                  maxWidth: 370,
                   height: "100%",
-                  mx: "auto",
                   borderRadius: "24px",
                   background: "rgba(255, 255, 255, 0.05)",
                   backdropFilter: "blur(8px)",
@@ -119,20 +116,18 @@ const PopularPhotographers = () => {
               >
                 <CardMedia
                   component="img"
-                  height="240"
+                  height="220"
                   image={getProfilePictureUrl(photographer.profilePicture)}
                   alt={photographer.name || "Photographer"}
                   sx={{
                     objectFit: "cover",
                     filter: "brightness(0.85)",
                     transition: "filter 0.3s",
-                    "&:hover": {
-                      filter: "brightness(1)",
-                    },
+                    "&:hover": { filter: "brightness(1)" },
                   }}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "https://via.placeholder.com/300x300.png?text=No+Image"; 
+                    e.target.src = "https://via.placeholder.com/300x300.png?text=No+Image";
                   }}
                 />
 
@@ -159,6 +154,7 @@ const PopularPhotographers = () => {
                   >
                     {photographer.name}
                   </Typography>
+
                   <Rating
                     value={photographer.rating}
                     precision={0.5}
@@ -181,6 +177,34 @@ const PopularPhotographers = () => {
                       fontSize: "0.8rem",
                     }}
                   />
+
+                  {/* 📍 Locations */}
+                  {photographer.locations?.length > 0 && (
+                    <Stack mt={2} spacing={1}>
+                      <Typography variant="body2" sx={{ color: "#aaa", fontStyle: "italic" }}>
+                        Locations: {photographer.locations.join(", ")}
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {/* 🎉 Events */}
+                  {photographer.selectedEvents?.length > 0 && (
+                    <Stack mt={1} direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
+                      {photographer.selectedEvents.map((event, i) => (
+                        <Chip
+                          key={i}
+                          label={event}
+                          size="small"
+                          sx={{
+                            backgroundColor: "#fdd835",
+                            color: "#000",
+                            fontWeight: 500,
+                            mt: 1,
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  )}
                 </CardContent>
               </Card>
             </Grid>

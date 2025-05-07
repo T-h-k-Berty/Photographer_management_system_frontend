@@ -220,93 +220,106 @@ const PhotographerPortfolio = () => {
     📸 Masterpiece Gallery
   </Typography>
 
-  <Grid container spacing={4}>
-    {portfolio.Galleries?.flatMap((gallery, index) =>
-      [gallery.photo1, gallery.photo2, gallery.photo3].filter(Boolean).map((photo, i) => (
-        <Grid item xs={12} sm={6} md={4} key={`${index}-${i}`}>
-          <Box
-            sx={{
-              position: "relative",
-              borderRadius: 3,
-              overflow: "hidden",
-              backgroundColor: "#000",
-              boxShadow: `0 12px 25px ${theme.shadow}`,
-              transition: "transform 0.4s ease, box-shadow 0.4s ease",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              "&:hover": {
-                transform: "scale(1.02)",
-                boxShadow: `0 16px 40px ${theme.shadow}`,
-              },
-            }}
-          >
-            {/* Full Photo View */}
-            <Box
-              component="img"
-              src={`http://localhost:5000/uploads/${photo}`}
-              alt={`Gallery ${index + 1} - Photo ${i + 1}`}
-              sx={{
-                width: "100%",
-                height: "auto",
-                maxHeight: 400,
-                objectFit: "contain",
-                display: "block",
-              }}
-            />
+  {portfolio.Galleries?.map((gallery, index) => (
+    <Box key={index} mb={8}>
+      {/* 🎨 Event Type Header */}
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        textAlign="left"
+        sx={{
+          color: darkMode ? "#ffd54f" : "#d84315",
+          mb: 2,
+          ml: 1,
+          textTransform: "capitalize",
+        }}
+      >
+        🎞️ {gallery.eventType}
+      </Typography>
 
-            {/* Overlay Info */}
+      <Grid container spacing={4}>
+        {[gallery.photo1, gallery.photo2, gallery.photo3].filter(Boolean).map((photo, i) => (
+          <Grid item xs={12} sm={6} md={4} key={i}>
             <Box
-              className="hoverContent"
               sx={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                backgroundColor: "rgba(0,0,0,0.85)",
-                color: "#fff",
-                p: 2,
-                textAlign: "center",
-                transform: "translateY(100%)",
-                opacity: 0,
-                transition: "all 0.4s ease",
+                position: "relative",
+                borderRadius: 3,
+                overflow: "hidden",
+                backgroundColor: "#000",
+                boxShadow: `0 12px 25px ${theme.shadow}`,
+                transition: "transform 0.4s ease, box-shadow 0.4s ease",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 "&:hover": {
-                  transform: "translateY(0%)",
-                  opacity: 1,
+                  transform: "scale(1.02)",
+                  boxShadow: `0 16px 40px ${theme.shadow}`,
                 },
               }}
             >
-              <Typography variant="h6">{gallery.eventType}</Typography>
-              <Typography variant="body2" sx={{ mt: 1, fontStyle: "italic", opacity: 0.9 }}>
-                {gallery.description}
-              </Typography>
+              <Box
+                component="img"
+                src={`http://localhost:5000/uploads/${photo}`}
+                alt={`Gallery ${index + 1} - Photo ${i + 1}`}
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: 400,
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+
+              {/* Overlay Description */}
+              <Box
+                className="hoverContent"
+                sx={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  width: "100%",
+                  backgroundColor: "rgba(0,0,0,0.85)",
+                  color: "#fff",
+                  p: 2,
+                  textAlign: "center",
+                  transform: "translateY(100%)",
+                  opacity: 0,
+                  transition: "all 0.4s ease",
+                  "&:hover": {
+                    transform: "translateY(0%)",
+                    opacity: 1,
+                  },
+                }}
+              >
+                <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.9 }}>
+                  {gallery.description}
+                </Typography>
+              </Box>
+
+              {/* Download Button */}
+              <IconButton
+                onClick={() =>
+                  downloadImageWithWatermark(`http://localhost:5000/uploads/${photo}`, portfolio.photographerName)
+                }
+                sx={{
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                  color: "white",
+                  backgroundColor: "rgba(0,0,0,0.4)",
+                  "&:hover": {
+                    backgroundColor: "rgba(0,0,0,0.7)",
+                  },
+                }}
+              >
+                <DownloadIcon />
+              </IconButton>
             </Box>
-
-            {/* Download Button */}
-            <IconButton
-              onClick={() =>
-                downloadImageWithWatermark(`http://localhost:5000/uploads/${photo}`, portfolio.photographerName)
-              }
-              sx={{
-                position: "absolute",
-                top: 12,
-                right: 12,
-                color: "white",
-                backgroundColor: "rgba(0,0,0,0.4)",
-                "&:hover": {
-                  backgroundColor: "rgba(0,0,0,0.7)",
-                },
-              }}
-            >
-              <DownloadIcon />
-            </IconButton>
-
-          
-          </Box>
-        </Grid>
-      ))
-    )}
-  </Grid>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  ))}
 </Box>
 
 
