@@ -277,7 +277,7 @@ sx={{
 
         {/* Gallery Section */}
         {/* Gallery Section - Grouped by Event Type */}
-<Box mt={10}>
+        <Box mt={10}>
   <Typography
     variant="h4"
     fontWeight="bold"
@@ -294,111 +294,124 @@ sx={{
   </Typography>
 
   {portfolio.Galleries?.map((gallery, index) => (
-    <Box key={index} mb={8}>
-      {/* 🎨 Event Type Header */}
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        textAlign="left"
+  <Box
+    key={index}
+    sx={{
+      display: "flex",
+      justifyContent: "center", // 🔥 Center the full gallery block
+      mt: 4,
+      mb: 8,
+    }}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 2,
+        maxWidth: 1200,
+        width: "100%",
+        backgroundColor: darkMode ? "#1a1a1a" : "#f5f5f5",
+        borderRadius: 4,
+        p: 2,
+        boxShadow: `0 8px 20px ${theme.shadow}`,
+      }}
+    >
+      {/* 🎞️ Left: Event Type + Description */}
+      <Box
         sx={{
-          color: darkMode ? "#ffd54f" : "#d84315",
-          mb: 2,
-          ml: 1,
-          textTransform: "capitalize",
+          flex: "1 1 260px",
+          minWidth: 260,
+          maxWidth: 300,
+          backgroundColor: darkMode ? "#2a2a2a" : "#ffffff",
+          borderRadius: 3,
+          p: 2.5,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)",
         }}
       >
-        🎞️ {gallery.eventType}
-      </Typography>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          sx={{
+            color: darkMode ? "#ffffff" : "#000000",
+            mb: 1.5,
+          }}
+        >
+          {gallery.eventType.charAt(0).toUpperCase() + gallery.eventType.slice(1)}
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: darkMode ? "#dddddd" : "#333",
+            fontSize: "0.95rem",
+            lineHeight: 1.6,
+          }}
+        >
+          {gallery.description}
+        </Typography>
+      </Box>
 
-      <Grid container spacing={4}>
-        {[gallery.photo1, gallery.photo2, gallery.photo3].filter(Boolean).map((photo, i) => (
-          <Grid item xs={12} sm={6} md={4} key={i}>
-            <Box
-              sx={{
-                position: "relative",
-                borderRadius: 3,
-                overflow: "hidden",
-                backgroundColor: "#000",
-                boxShadow: `0 12px 25px ${theme.shadow}`,
-                transition: "transform 0.4s ease, box-shadow 0.4s ease",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                "&:hover": {
-                  transform: "scale(1.02)",
-                  boxShadow: `0 16px 40px ${theme.shadow}`,
-                },
-              }}
-            >
-              <Box
-                component="img"
-                src={`http://localhost:5000/uploads/${photo}`}
-                alt={`Gallery ${index + 1} - Photo ${i + 1}`}
-                sx={{
-                  width: "100%",
-                  height: "auto",
-                  maxHeight: 400,
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
+      {/* 🖼️ Right: 3 Fixed-Size Images */}
+      {[gallery.photo1, gallery.photo2, gallery.photo3].filter(Boolean).map((photo, i) => (
+        <Box
+          key={i}
+          sx={{
+            flex: "1 1 220px",
+            minWidth: 220,
+            maxWidth: 250,
+            height: 300,
+            borderRadius: 3,
+            overflow: "hidden",
+            position: "relative",
+            backgroundColor: "#000",
+            boxShadow: `0 6px 16px ${theme.shadow}`,
+          }}
+        >
+          <Box
+            component="img"
+            src={`http://localhost:5000/uploads/${photo}`}
+            alt={`Gallery ${index + 1} - Photo ${i + 1}`}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
 
-              {/* Overlay Description */}
-              <Box
-                className="hoverContent"
-                sx={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  width: "100%",
-                  backgroundColor: "rgba(0,0,0,0.85)",
-                  color: "#fff",
-                  p: 2,
-                  textAlign: "center",
-                  transform: "translateY(100%)",
-                  opacity: 0,
-                  transition: "all 0.4s ease",
-                  "&:hover": {
-                    transform: "translateY(0%)",
-                    opacity: 1,
-                  },
-                }}
-              >
-                <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.9 }}>
-                  {gallery.description}
-                </Typography>
-              </Box>
-
-              {/* Download Button */}
-              <IconButton
-                onClick={() =>
-                  downloadImageWithWatermark(`http://localhost:5000/uploads/${photo}`, portfolio.photographerName)
-                }
-                sx={{
-                  position: "absolute",
-                  top: 12,
-                  right: 12,
-                  color: "white",
-                  backgroundColor: "rgba(0,0,0,0.4)",
-                  "&:hover": {
-                    backgroundColor: "rgba(0,0,0,0.7)",
-                  },
-                }}
-              >
-                <DownloadIcon />
-              </IconButton>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+          {/* ⬇️ Download Icon */}
+          <IconButton
+            onClick={() =>
+              downloadImageWithWatermark(
+                `http://localhost:5000/uploads/${photo}`,
+                portfolio.photographerName
+              )
+            }
+            sx={{
+              position: "absolute",
+              bottom: 10,
+              right: 10,
+              color: "#fff",
+              backgroundColor: "rgba(0,0,0,0.4)",
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.7)",
+              },
+            }}
+          >
+            <DownloadIcon />
+          </IconButton>
+        </Box>
+      ))}
     </Box>
-  ))}
+  </Box>
+))}
+
 </Box>
 
 
-
-        {/* Package Section */}
-        <Box mt={10}>
+<Box mt={10}>
   <Typography
     variant="h4"
     fontWeight="bold"
@@ -412,97 +425,105 @@ sx={{
     🎁 Special Service Packages
   </Typography>
 
-  <Grid container spacing={4}>
-    {portfolio.Packages?.map((pkg, idx) => (
-      <Grid item xs={12} sm={6} md={4} key={idx}>
-        <Card
-          sx={{
-            background: `linear-gradient(135deg, ${darkMode ? "#212121" : "#fff"}, ${darkMode ? "#333" : "#f9f9f9"})`,
-            color: theme.cardText,
-            borderRadius: "20px",
-            border: `2px solid ${darkMode ? "#fdd835" : "#ff9800"}`,
-            boxShadow: `0 12px 30px ${theme.shadow}`,
-            p: 3,
-            transition: "transform 0.3s ease, box-shadow 0.3s ease",
-            position: "relative",
-            "&:hover": {
-              transform: "translateY(-5px)",
-              boxShadow: `0 16px 40px ${theme.shadow}`,
-            },
-          }}
-        >
-          {/* 🎀 Gift ribbon icon */}
-          <RedeemIcon
-            sx={{
-              position: "absolute",
-              top: -20,
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: darkMode ? "#fdd835" : "#ff9800",
-              color: "#fff",
-              borderRadius: "50%",
-              padding: 1,
-              fontSize: "2rem",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            }}
-          />
+  <Box display="flex" justifyContent="center">
+    <Grid
+      container
+      spacing={4}
+      sx={{
+        maxWidth: 1200,
+        width: "100%",
+        justifyContent: "center",
+      }}
+    >
+      {portfolio.Packages?.map((pkg, idx) => (
+        <Grid item xs={12} sm={6} md={4} key={idx}>
+         <Card
+  sx={{
+    width: 320, // ✅ Fixed width
+    minHeight: 360, // ✅ Fixed height to align cards
+    background: `linear-gradient(135deg, ${darkMode ? "#212121" : "#fff"}, ${darkMode ? "#333" : "#f9f9f9"})`,
+    color: theme.cardText,
+    borderRadius: "20px",
+    border: `2px solid ${darkMode ? "#fdd835" : "#ff9800"}`,
+    boxShadow: `0 12px 30px ${theme.shadow}`,
+    p: 3,
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: `0 16px 40px ${theme.shadow}`,
+    },
+  }}
+>
 
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            gutterBottom
-            textAlign="center"
-            sx={{
-              color: darkMode ? "#ffe082" : "#ff6f00",
-              mt: 3,
-            }}
-          >
-            {pkg.title}
-          </Typography>
-
-          <Divider sx={{ my: 2, borderColor: theme.border }} />
-
-          <Typography
-            variant="body2"
-            sx={{
-              fontSize: "0.95rem",
-              mb: 2,
-              lineHeight: 1.6,
-              textAlign: "center",
-              color: theme.textSecondary,
-            }}
-          >
-            {pkg.description}
-          </Typography>
-
-          <Typography
-            variant="h6"
-            align="center"
-            sx={{
-              backgroundColor: darkMode ? "#fdd835" : "#ff6f00",
-              color: "#000",
-              borderRadius: "30px",
-              fontWeight: "bold",
-              mt: 2,
-              py: 1,
-              px: 3,
-              display: "inline-block",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-            }}
-          >
-            Rs.{" "}
-            {parseFloat(pkg.price).toLocaleString("en-LK", {
-              minimumFractionDigits: 2,
-            })}
-          </Typography>
-        </Card>
-      </Grid>
-    ))}
-  </Grid>
+            <RedeemIcon
+              sx={{
+                position: "absolute",
+                top: -20,
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: darkMode ? "#fdd835" : "#ff9800",
+                color: "#fff",
+                borderRadius: "50%",
+                padding: 1,
+                fontSize: "2rem",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+              }}
+            />
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              gutterBottom
+              textAlign="center"
+              sx={{ color: darkMode ? "#ffe082" : "#ff6f00", mt: 3 }}
+            >
+              {pkg.title}
+            </Typography>
+            <Divider sx={{ my: 2, borderColor: theme.border }} />
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "0.95rem",
+                mb: 2,
+                lineHeight: 1.6,
+                textAlign: "center",
+                color: theme.textSecondary,
+              }}
+            >
+              {pkg.description}
+            </Typography>
+            <Typography
+              variant="h6"
+              align="center"
+              sx={{
+                backgroundColor: darkMode ? "#fdd835" : "#ff6f00",
+                color: "#000",
+                borderRadius: "30px",
+                fontWeight: "bold",
+                mt: 2,
+                py: 1,
+                px: 3,
+                display: "inline-block",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+              }}
+            >
+              Rs.{" "}
+              {parseFloat(pkg.price).toLocaleString("en-LK", {
+                minimumFractionDigits: 2,
+              })}
+            </Typography>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
 </Box>
 
 
-        {/* Footer */}
+
         <Box mt={12} py={5} textAlign="center" borderTop={`1px solid ${theme.border}`} color={theme.textSecondary}>
           <Typography variant="body2">© {new Date().getFullYear()} EventClick – Showcase. Inspire. Connect.</Typography>
         </Box>
