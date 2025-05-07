@@ -5,6 +5,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import backgroundImg from "../Home/home.jpg";
 import TopBar from "../TopBar/TopBar";
 import PopularPhotographers from "../Popular_Phptographer/PopularPhotographer";
+import Footer from "../Footer/Footer"; 
+
 const Home = () => {
   return (
     <>
@@ -100,6 +102,7 @@ const Home = () => {
 
       {/* Popular Photographers Section */}
       <PopularPhotographers />
+      <Footer />
     </>
 
     

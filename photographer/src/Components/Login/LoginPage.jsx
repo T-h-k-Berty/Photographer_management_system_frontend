@@ -126,6 +126,15 @@ const LoginPage = () => {
               sx={{ input: { backgroundColor: "#222", color: "white" }, mb: 2 }}
             />
 
+<Typography
+  variant="body2"
+  sx={{ textAlign: "right", color: "#aaa", mb: 2, cursor: "pointer" }}
+  onClick={() => navigate("/forgot-password")}
+>
+  Forgot Password?
+</Typography>
+
+
             <Box textAlign="center">
               <Button type="submit" variant="contained" color="primary" fullWidth sx={{ borderRadius: "30px", py: 1, mb: 2 }} disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
