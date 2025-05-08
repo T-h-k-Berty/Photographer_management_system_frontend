@@ -15,7 +15,8 @@ import "./Style/main.css";
 import Footer from "./Components/Photographer/Footer/Footer.jsx";  
 import ForgotPassword from "./Components/Login/ForgotPassword.jsx"; 
 import VerifyOtp from "./Components/Login/VerifyOtp.jsx";    
-import ResetPassword from "./Components/Login/ResetPassword.jsx";                   
+import ResetPassword from "./Components/Login/ResetPassword.jsx"; 
+import EditPortfolio from "./Components/Photographer/Portfolio/Editportfolio.jsx";                  
 
 const App = () => {
   return (
@@ -37,6 +38,8 @@ const App = () => {
         <Route path="/photographer/view-portfolio" element={<ViewPortfolio />} />
         <Route path="/photographer/portfolio/:id" element={<PhotographerPortfolio />} />
         <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/photographer/edit-portfolio/:portfolioId" element={<EditPortfolio />} />
+
         
       </Routes>
     </Router>

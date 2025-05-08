@@ -21,6 +21,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { useNavigate } from "react-router-dom";
 import TopBar from "../TopBar/TopBar";
 import RedeemIcon from "@mui/icons-material/Redeem"; // 📦 Add this to your imports
+import Footer from "../Footer/Footer";
 
 
 const ViewPortfolio = () => {
@@ -193,22 +194,22 @@ return (
     {/* 🎯 Tags & Locations */}
     <Box mt={1} textAlign="center">
       <Box display="inline-flex" flexWrap="wrap" gap={1} justifyContent="center">
-        {portfolio.selectedEvents.map((event, i) => (
-          <Box
-            key={i}
-            sx={{
-              px: 2.5,
-              py: 0.8,
-              backgroundColor: theme.tagBg,
-              borderRadius: "999px",
-              color: theme.tagColor,
-              fontWeight: 500,
-              fontSize: "0.85rem",
-            }}
-          >
-            {event}
-          </Box>
-        ))}
+      {Array.isArray(portfolio.selectedEvents) && portfolio.selectedEvents.map((event, i) => (
+  <Box
+    key={i}
+    sx={{
+      px: 2.5,
+      py: 0.8,
+      backgroundColor: theme.tagBg,
+      borderRadius: "999px",
+      color: theme.tagColor,
+      fontWeight: 500,
+      fontSize: "0.85rem",
+    }}
+  >
+    {event}
+  </Box>
+))}
       </Box>
 
       <Typography
@@ -223,12 +224,32 @@ sx={{
   lineHeight: 1.6,
 }}
 >
-{portfolio.locations.map((loc, i) => (
-  <span key={i}>
-    {loc}
-    {i < portfolio.locations.length - 1 && <span style={{ margin: "0 8px", color: "#aaa" }}>•</span>}
-  </span>
-))}
+{(() => {
+  let locationsArray = [];
+  try {
+    locationsArray = Array.isArray(portfolio.locations)
+      ? portfolio.locations
+      : JSON.parse(portfolio.locations || "[]");
+  } catch (e) {
+    console.warn("Invalid locations format", e);
+    locationsArray = [];
+  }
+
+  return locationsArray.length > 0 ? (
+    locationsArray.map((loc, i) => (
+      <span key={i}>
+        {loc}
+        {i < locationsArray.length - 1 && (
+          <span style={{ margin: "0 8px", color: "#aaa" }}>•</span>
+        )}
+      </span>
+    ))
+  ) : (
+    <span style={{ color: "#aaa" }}>No locations available</span>
+  );
+})()}
+
+
 </Typography>
 
     </Box>
@@ -272,12 +293,30 @@ sx={{
 </Box>
 
   </Box>
+
+  <Box textAlign="right" sx={{ mt: -3, mr: 0}}>
+  <button
+    style={{
+      backgroundColor: darkMode ? "#fdd835" : "#ff6f00",
+      border: "none",
+      borderRadius: "8px",
+      padding: "10px 20px",
+      color: "#000",
+      fontWeight: "bold",
+      cursor: "pointer",
+      boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+    }}
+    onClick={() => navigate(`/photographer/edit-portfolio/${portfolio.id}`)}
+  >
+    ✏️ Edit Portfolio
+  </button>
+</Box>
+
 </Paper>
 </Zoom>
 
-        {/* Gallery Section */}
-        {/* Gallery Section - Grouped by Event Type */}
-        <Box mt={10}>
+
+  <Box mt={10}>
   <Typography
     variant="h4"
     fontWeight="bold"
@@ -522,14 +561,12 @@ sx={{
   </Box>
 </Box>
 
-
-
-        <Box mt={12} py={5} textAlign="center" borderTop={`1px solid ${theme.border}`} color={theme.textSecondary}>
-          <Typography variant="body2">© {new Date().getFullYear()} EventClick – Showcase. Inspire. Connect.</Typography>
-        </Box>
       </Box>
+
+      <Footer />
     </>
   );
 };
+
 
 export default ViewPortfolio;

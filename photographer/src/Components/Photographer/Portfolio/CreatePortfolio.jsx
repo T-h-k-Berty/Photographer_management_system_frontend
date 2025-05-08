@@ -1,5 +1,5 @@
 // === CreatePortfolio.jsx ===
-import React, { useState } from "react";
+
 import {
   TextField,
   Checkbox,
@@ -21,6 +21,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import TopBar from "../TopBar/TopBar";
 import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import Footer from "../Footer/Footer";
+
 
 const eventTypes = ["Wedding", "Fashion", "Nature", "Beach"];
 const sriLankanLocations = [
@@ -44,10 +47,20 @@ const inputStyle = {
   "& .Mui-focused .MuiInputLabel-root": { color: "#fff" },
 };
 
-const CreatePortfolio = () => {
+const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-
+  
+  useEffect(() => {
+    if (initialData) {
+      setPersonalDetails(initialData.personalDetails);
+      setGalleries(initialData.galleries);
+      setPackages(initialData.packages);
+      setLocations(initialData.locations);
+    }
+  }, [initialData]);
+  
   const [personalDetails, setPersonalDetails] = useState({
     shopName: "",
     photographerName: "",
@@ -107,6 +120,18 @@ const CreatePortfolio = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    const payload = {
+      personalDetails,
+      galleries,
+      packages,
+      locations,
+    };
+  
+    if (isEdit && onSubmit) {
+      await onSubmit(payload);
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -156,9 +181,10 @@ const CreatePortfolio = () => {
       <TopBar />
       <Box sx={{ backgroundColor: "#000", minHeight: "100vh", py: 6, color: "white", pt: 10 }}>
         <Box maxWidth="1000px" mx="auto">
-          <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-            Create Portfolio
-          </Typography>
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+  {isEdit ? "Edit Portfolio" : "Create Portfolio"}
+</Typography>
+
           <Typography variant="h5" gutterBottom>Personal Details</Typography>
           <Grid container spacing={2} className="mb-4">
             {["shopName", "photographerName", "description"].map((field, i) => (
@@ -413,6 +439,7 @@ const CreatePortfolio = () => {
         </Box>
       </Box>
     </Box>
+    <Footer />
   </>
 );
 };

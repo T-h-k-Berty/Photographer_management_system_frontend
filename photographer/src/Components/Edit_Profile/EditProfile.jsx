@@ -13,6 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import TopBar from "../Photographer/TopBar/TopBar"; // ✅ Use shared dynamic TopBar (not Photographer-specific)
 import { useNavigate } from "react-router-dom"; // ✅ For redirection after update
+import Footer from "../Photographer/Footer/Footer";
 
 const EditProfile = () => {
   const [user, setUser] = useState(null);
@@ -201,6 +202,7 @@ const EditProfile = () => {
           </Box>
         </form>
       </Box>
+      <Footer />
     </>
   );
 };
