@@ -18,7 +18,9 @@ import VerifyOtp from "./Components/Login/VerifyOtp.jsx";
 import ResetPassword from "./Components/Login/ResetPassword.jsx"; 
 import EditPortfolio from "./Components/Photographer/Portfolio/Editportfolio.jsx";     
 import UpcomingEventSchedule from "./Components/Schedule/UpcomingEventSchedule.jsx";     
-import EventScheduleForm from "./Components/Schedule/EventScheduleForm.jsx";        
+import EventScheduleForm from "./Components/Schedule/EventScheduleForm.jsx";   
+import BookingForm from "./Components/Client/BookingForm.jsx";     
+import ViewBookings from "./Components/Client/ViewBookings.jsx";
 
 const App = () => {
   return (
@@ -26,7 +28,7 @@ const App = () => {
       <Routes>
 
         <Route path="/Topbar" element={<TopBar />} />
-        <Route path="/Footer" element={<Footer />} />
+        <Route path="/Footer" element={<Footer />} /> 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword/>} />
@@ -43,6 +45,8 @@ const App = () => {
         <Route path="/photographer/edit-portfolio/:portfolioId" element={<EditPortfolio />} />
         <Route path="/photographer/UpcomingEventSchedule" element={<UpcomingEventSchedule />} />
         <Route path="/photographer/EventScheduleForm" element={<EventScheduleForm />} />
+        <Route path="/Client/BookingForm/:photographerId" element={<BookingForm />} />
+        <Route path="/Client/ViewBookings" element={<ViewBookings />} />
 
         
       </Routes>

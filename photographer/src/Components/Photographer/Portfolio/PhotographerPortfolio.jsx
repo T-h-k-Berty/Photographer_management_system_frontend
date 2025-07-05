@@ -18,20 +18,19 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Slide
+  Slide,
+  Tooltip as MuiTooltip,
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import TopBar from "../TopBar/TopBar";
 import StarIcon from "@mui/icons-material/Star";
 import RedeemIcon from "@mui/icons-material/Redeem";
-
-// Calendar & helpers
+import BookOnlineIcon from "@mui/icons-material/BookOnline";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import Tooltip from "@mui/material/Tooltip";
 import dayjs from "dayjs";
 
 const PhotographerPortfolio = () => {
@@ -42,6 +41,7 @@ const PhotographerPortfolio = () => {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [events, setEvents] = useState([]);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Fetch portfolio
   useEffect(() => {
@@ -127,9 +127,9 @@ const PhotographerPortfolio = () => {
     const d = dayjs(date).format("YYYY-MM-DD");
     if (busyDatesSet.has(d)) {
       return (
-        <Tooltip title="Photographer is not available" arrow>
+        <MuiTooltip title="Photographer is not available" arrow>
           <InfoOutlinedIcon sx={{ color: "#888", fontSize: 16, mt: 0.3, ml: 0.2 }} />
-        </Tooltip>
+        </MuiTooltip>
       );
     }
     return null;
@@ -349,28 +349,69 @@ const PhotographerPortfolio = () => {
           </Paper>
         </Zoom>
 
-        {/* Floating Availability Button */}
-        <Fab
-          color="warning"
-          aria-label="photographer-availability"
+        {/* ==== Floating Buttons ==== */}
+        {/* Booking Button (Above Calendar Fab) */}
+        <Box
           sx={{
             position: "fixed",
-            bottom: { xs: 20, md: 40 },
+            bottom: { xs: 94, md: 120 },
             right: { xs: 20, md: 40 },
-            zIndex: 2000,
-            boxShadow: 5,
-            background: darkMode ? "#232323" : "#fffde7",
-            color: darkMode ? "#FFD600" : "#ff6f00",
-            transition: "all 0.2s",
-            "&:hover": {
-              background: darkMode ? "#FFD600" : "#fff176",
-              color: "#232323",
-            },
+            zIndex: 2100,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
           }}
-          onClick={() => setCalendarOpen(true)}
         >
-          <CalendarMonthIcon fontSize="large" />
-        </Fab>
+          <MuiTooltip title="Book This Photographer" placement="left" arrow>
+            <Fab
+              color="warning"
+              onClick={() => navigate(`/Client/BookingForm/${portfolio.userId}`)}
+              sx={{
+                mb: 2,
+                width: 68,
+                height: 68,
+                background: "radial-gradient(circle at 40% 40%, #ffd600 65%, #fffde7 100%)",
+                color: "#222",
+                boxShadow: "0 8px 32px 2px rgba(255,214,0,0.25)",
+                border: "3px solid #ffd600",
+                transition: "transform 0.18s cubic-bezier(.42,2,.57,.73)",
+                animation: "bounceGlow 1.8s infinite alternate",
+                "&:hover": {
+                  background: "radial-gradient(circle at 40% 40%, #fffde7 70%, #ffd600 100%)",
+                  color: "#ff6f00",
+                  transform: "scale(1.08) rotate(-6deg)",
+                  boxShadow: "0 10px 36px 3px #ffd60099",
+                },
+              }}
+            >
+              <BookOnlineIcon sx={{ fontSize: 40 }} />
+            </Fab>
+          </MuiTooltip>
+
+          {/* Calendar Button */}
+          <MuiTooltip title="Photographer's Availability" placement="left" arrow>
+            <Fab
+              color="warning"
+              aria-label="photographer-availability"
+              sx={{
+                width: 56,
+                height: 56,
+                boxShadow: 5,
+                background: darkMode ? "#232323" : "#fffde7",
+                color: darkMode ? "#FFD600" : "#ff6f00",
+                transition: "all 0.2s",
+                "&:hover": {
+                  background: darkMode ? "#FFD600" : "#fff176",
+                  color: "#232323",
+                },
+              }}
+              onClick={() => setCalendarOpen(true)}
+            >
+              <CalendarMonthIcon fontSize="large" />
+            </Fab>
+          </MuiTooltip>
+        </Box>
+        {/* ==== End Floating Buttons ==== */}
 
         {/* Modal Dialog for Calendar */}
         <Dialog
@@ -665,6 +706,16 @@ const PhotographerPortfolio = () => {
           <Typography variant="body2">© {new Date().getFullYear()} EventClick – Showcase. Inspire. Connect.</Typography>
         </Box>
       </Box>
+      {/* Add Keyframes for Bounce/Glow Animation */}
+      <style>
+        {`
+          @keyframes bounceGlow {
+            0%   { transform: scale(1) rotate(0deg); box-shadow: 0 0 0 0 #ffd60055, 0 8px 32px 2px #ffd60033; }
+            50%  { transform: scale(1.12) rotate(-8deg); box-shadow: 0 0 30px 7px #ffd60066, 0 8px 38px 7px #ffd60044; }
+            100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 0 0 #ffd60044, 0 8px 32px 2px #ffd60033; }
+          }
+        `}
+      </style>
     </>
   );
 };
