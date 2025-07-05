@@ -26,7 +26,9 @@ const PhotographerTopBar = ({ user }) => {
     const fetchPortfolio = async () => {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user"));
-        const res = await axios.get(`http://localhost:5000/api/portfolios/user/${storedUser.id}`);
+        const res = await axios.get(
+          `http://localhost:5000/api/portfolios/user/${storedUser.id}`
+        );
         if (res.data) {
           setHasPortfolio(true);
         } else {
@@ -62,25 +64,35 @@ const PhotographerTopBar = ({ user }) => {
     }
   };
 
+  // NEW: Schedule click handler
+  const handleScheduleClick = () => {
+    navigate("/photographer/UpcomingEventSchedule");
+  };
+
   return (
     <AppBar position="fixed" sx={{ backgroundColor: "#222" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         {/* Logo + Title */}
         <Box
-  display="flex"
-  alignItems="center"
-  sx={{ cursor: "pointer" }}
-  onClick={() => navigate("/PhotographerHome")}
->
-  <CameraAltIcon sx={{ fontSize: 35, color: "white", mr: 1 }} />
-  <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
-    EventClick
-  </Typography>
-</Box>
-
+          display="flex"
+          alignItems="center"
+          sx={{ cursor: "pointer" }}
+          onClick={() => navigate("/PhotographerHome")}
+        >
+          <CameraAltIcon sx={{ fontSize: 35, color: "white", mr: 1 }} />
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+            EventClick
+          </Typography>
+        </Box>
 
         {/* Navigation Options */}
-        <Grid container spacing={2} alignItems="center" justifyContent="flex-end" sx={{ width: "auto" }}>
+        <Grid
+          container
+          spacing={2}
+          alignItems="center"
+          justifyContent="flex-end"
+          sx={{ width: "auto" }}
+        >
           <Grid item>
             <Typography variant="body1" sx={{ color: "white", fontWeight: "bold" }}>
               Booking
@@ -98,7 +110,11 @@ const PhotographerTopBar = ({ user }) => {
           </Grid>
 
           <Grid item>
-            <Typography variant="body1" sx={{ color: "white", fontWeight: "bold" }}>
+            <Typography
+              variant="body1"
+              sx={{ color: "white", fontWeight: "bold", cursor: "pointer" }}
+              onClick={handleScheduleClick}
+            >
               Schedule
             </Typography>
           </Grid>
@@ -107,9 +123,18 @@ const PhotographerTopBar = ({ user }) => {
           <Grid item>
             <Box display="flex" alignItems="center">
               <Avatar
-                src={user.profilePicture ? `http://localhost:5000/${user.profilePicture}` : "https://via.placeholder.com/40"}
+                src={
+                  user.profilePicture
+                    ? `http://localhost:5000/${user.profilePicture}`
+                    : "https://via.placeholder.com/40"
+                }
                 onClick={handleProfileClick}
-                sx={{ width: 45, height: 45, cursor: "pointer", border: "2px solid white" }}
+                sx={{
+                  width: 45,
+                  height: 45,
+                  cursor: "pointer",
+                  border: "2px solid white",
+                }}
               />
               <IconButton onClick={handleProfileClick} sx={{ color: "white" }}>
                 <ExpandMoreIcon />
@@ -128,7 +153,11 @@ const PhotographerTopBar = ({ user }) => {
                 }}
               >
                 <Box sx={{ px: 2, py: 1 }}>
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ color: "#333" }}>
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight="bold"
+                    sx={{ color: "#333" }}
+                  >
                     👤 {user.name}
                   </Typography>
                 </Box>

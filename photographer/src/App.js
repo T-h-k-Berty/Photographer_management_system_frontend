@@ -16,7 +16,9 @@ import Footer from "./Components/Photographer/Footer/Footer.jsx";
 import ForgotPassword from "./Components/Login/ForgotPassword.jsx"; 
 import VerifyOtp from "./Components/Login/VerifyOtp.jsx";    
 import ResetPassword from "./Components/Login/ResetPassword.jsx"; 
-import EditPortfolio from "./Components/Photographer/Portfolio/Editportfolio.jsx";                  
+import EditPortfolio from "./Components/Photographer/Portfolio/Editportfolio.jsx";     
+import UpcomingEventSchedule from "./Components/Schedule/UpcomingEventSchedule.jsx";     
+import EventScheduleForm from "./Components/Schedule/EventScheduleForm.jsx";        
 
 const App = () => {
   return (
@@ -39,6 +41,8 @@ const App = () => {
         <Route path="/photographer/portfolio/:id" element={<PhotographerPortfolio />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/photographer/edit-portfolio/:portfolioId" element={<EditPortfolio />} />
+        <Route path="/photographer/UpcomingEventSchedule" element={<UpcomingEventSchedule />} />
+        <Route path="/photographer/EventScheduleForm" element={<EventScheduleForm />} />
 
         
       </Routes>
