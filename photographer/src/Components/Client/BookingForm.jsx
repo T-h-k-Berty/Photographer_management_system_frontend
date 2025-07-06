@@ -28,6 +28,7 @@ import StarIcon from "@mui/icons-material/Star";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import TopBar from "../Photographer/TopBar/TopBar";
 
 const eventTypes = [
   "Wedding",
@@ -170,7 +171,9 @@ const BookingForm = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", background: "#131313", pb: 6, pt: 8 }}>
+    <>
+      <TopBar />
+    <Box sx={{ minHeight: "100vh", mx: "auto", mt: 3,background: "#131313", pb: 6, pt: 8 }}>
       <Grid container justifyContent="center" spacing={2}>
         <Grid item xs={12} md={7} lg={6}>
           {/* === Photographer Summary Card === */}
@@ -454,6 +457,7 @@ const BookingForm = () => {
         </Alert>
       </Snackbar>
     </Box>
+    </>
   );
 };
 

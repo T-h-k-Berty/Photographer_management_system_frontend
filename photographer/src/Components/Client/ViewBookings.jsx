@@ -29,6 +29,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import InfoIcon from "@mui/icons-material/Info";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import TopBar from "../Photographer/TopBar/TopBar";
 
 const statusMap = {
   pending: {
@@ -164,7 +165,9 @@ const ViewBookings = () => {
   };
 
   return (
-    <Box sx={{ background: "#121212", minHeight: "100vh", py: 7, px: { xs: 2, md: 5 } }}>
+    <>
+      <TopBar />
+    <Box sx={{ background: "#121212", minHeight: "100vh", mx: "auto", mt: 5,py: 7, px: { xs: 2, md: 5 } }}>
       <Typography
         variant="h3"
         fontWeight="bold"
@@ -388,6 +391,7 @@ const ViewBookings = () => {
         </Alert>
       </Snackbar>
     </Box>
+    </>
   );
 };
 

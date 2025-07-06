@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   AppBar, Toolbar, Typography, Box, Avatar, Grid, IconButton, Menu,
-  MenuItem, Divider, Badge, Dialog, DialogTitle, DialogContent, Button, Tooltip, CircularProgress
+  MenuItem, Divider, Badge, Tooltip, CircularProgress, Dialog, DialogTitle, DialogContent, Button, Chip
 } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -15,73 +16,207 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// ---- Notification Booking Details Dialog ----
+const statusMap = {
+  Accepted: {
+    label: "Accepted",
+    color: "#2cff6e",
+    icon: <CheckCircleIcon sx={{ fontSize: 22, verticalAlign: "-5px" }} />
+  },
+  Cancelled: {
+    label: "Cancelled",
+    color: "#e53935",
+    icon: <CancelIcon sx={{ fontSize: 22, verticalAlign: "-5px" }} />
+  },
+  Pending: {
+    label: "Pending",
+    color: "#FFD600",
+    icon: <HourglassEmptyIcon sx={{ fontSize: 22, verticalAlign: "-5px" }} />
+  }
+};
+
+const getStatusChip = (status) => {
+  const s = statusMap[status] || statusMap.Pending;
+  return (
+    <Chip
+      label={s.label}
+      icon={s.icon}
+      sx={{
+        background: s.color,
+        color: "#181818",
+        fontWeight: "bold",
+        fontSize: 17,
+        px: 2.2,
+        py: 1.5,
+        borderRadius: "15px",
+        boxShadow: "0 2px 10px 0 #0004",
+        letterSpacing: 0.7,
+        ml: 1
+      }}
+    />
+  );
+};
+
+// --- Notification Dialog ---
 const NotificationDialog = ({
   open, booking, onClose, onAction, actionLoading, notifMessage
 }) => (
-  <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+  <Dialog
+    open={open}
+    onClose={onClose}
+    maxWidth="xs"
+    fullWidth
+    PaperProps={{
+      sx: {
+        background: "rgba(22,22,22,0.87)",
+        borderRadius: "28px",
+        boxShadow: "0 8px 40px #FFD60066, 0 1.5px 9px #000a",
+        overflow: "hidden",
+        border: "2.5px solid #FFD600",
+        backdropFilter: "blur(10px)",
+      }
+    }}
+  >
     <DialogTitle
-      sx={{ background: "#181818", color: "#FFD600", fontWeight: 700, fontSize: 24, letterSpacing: 1 }}
+      sx={{
+        color: "#FFD600",
+        fontWeight: 800,
+        fontSize: 27,
+        letterSpacing: 1.5,
+        px: 3,
+        py: 2.5,
+        boxShadow: "0 2px 12px #FFD60033",
+        borderBottom: "2px solid #FFD600",
+        background: "linear-gradient(90deg, #222 80%, #FFD60022 100%)",
+        position: "relative"
+      }}
     >
       Booking Details
+      {booking && (
+        <Box sx={{ position: "absolute", right: 28, top: 22 }}>
+          {getStatusChip(booking.status)}
+        </Box>
+      )}
     </DialogTitle>
-    <DialogContent sx={{ background: "#222", pb: 3 }}>
+    <DialogContent sx={{ p: { xs: 2, md: 4 } }}>
       {!booking ? (
-        <Box sx={{ textAlign: "center", p: 3 }}>
-          <CircularProgress size={40} sx={{ color: "#FFD600" }} />
+        <Box sx={{ textAlign: "center", py: 4 }}>
+          <CircularProgress size={50} sx={{ color: "#FFD600" }} />
         </Box>
       ) : (
-        <>
-          <Typography sx={{ color: "#FFD600", fontWeight: 600, fontSize: 17, mb: 1 }}>
-            <EventAvailableIcon sx={{ fontSize: 19, mr: 1 }} />
-            {booking.eventType}
-          </Typography>
-          <Typography sx={{ color: "#fff", mb: 1 }}>
-            <CalendarMonthIcon sx={{ color: "#FFD600", fontSize: 16, mr: 0.6 }} />
-            {booking.date} &nbsp;
-            <AccessTimeIcon sx={{ color: "#FFD600", fontSize: 16, mr: 0.6 }} />
-            {booking.time}
-          </Typography>
-          <Typography sx={{ color: "#fffde7", mb: 1 }}>
-            <LocationOnIcon sx={{ color: "#FFD600", fontSize: 16, mr: 1 }} />
-            {booking.address}
-          </Typography>
-          <Typography sx={{ color: "#fffde7", mb: 2 }}>
-            {booking.description || <i>No description</i>}
-          </Typography>
-          {notifMessage && (
-            <Typography sx={{ color: "#FFD600", mb: 2 }}>
-              <b>Message:</b> {notifMessage}
-            </Typography>
-          )}
-          <Box display="flex" gap={2} justifyContent="flex-end">
-            <Button
-              variant="contained"
-              color="success"
-              startIcon={<CheckCircleIcon />}
-              disabled={actionLoading}
-              onClick={() => onAction("accept")}
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+            <Avatar
+              src={
+                booking.client?.profilePicture
+                  ? `http://localhost:5000/uploads/${booking.client.profilePicture}`
+                  : undefined
+              }
+              sx={{
+                width: 52,
+                height: 52,
+                background: "#FFD600",
+                color: "#181818",
+                fontSize: 30,
+                boxShadow: "0 2px 8px #FFD60055"
+              }}
             >
-              Accept
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              startIcon={<CancelIcon />}
-              disabled={actionLoading}
-              onClick={() => onAction("cancel")}
-            >
-              Cancel
-            </Button>
+              <CameraAltIcon fontSize="inherit" />
+            </Avatar>
+            <Box>
+              <Typography sx={{ color: "#FFD600", fontWeight: 700, fontSize: 19 }}>
+                {booking.client?.name || "Client"}
+              </Typography>
+              <Typography sx={{ color: "#fff", fontWeight: 500, fontSize: 16 }}>
+                {booking.client?.email}
+              </Typography>
+            </Box>
           </Box>
-        </>
+          <Typography sx={{
+            color: "#ffe082", fontSize: 16, mb: 2, mt: 1.5,
+            background: "#232323cc", px: 2, py: 1, borderRadius: 2
+          }}>
+            <b>Message:</b> {notifMessage}
+          </Typography>
+          <Box sx={{ color: "#fff", mb: 2, fontSize: 17 }}>
+            <Box display="flex" alignItems="center" mb={1}>
+              <EventAvailableIcon sx={{ color: "#FFD600", fontSize: 20, mr: 1 }} />
+              {booking.eventType}
+            </Box>
+            <Box display="flex" alignItems="center" mb={1}>
+              <CalendarMonthIcon sx={{ color: "#FFD600", fontSize: 20, mr: 1 }} />
+              {booking.date} &nbsp;
+              <AccessTimeIcon sx={{ color: "#FFD600", fontSize: 20, ml: 2, mr: 1 }} />
+              {booking.time}
+            </Box>
+            <Box display="flex" alignItems="center" mb={1}>
+              <LocationOnIcon sx={{ color: "#FFD600", fontSize: 20, mr: 1 }} />
+              {booking.address}
+            </Box>
+            <Box sx={{ background: "#222c", px: 2, py: 1, borderRadius: 2, mb: 2 }}>
+              {booking.description || <i style={{ color: "#FFD600" }}>No description</i>}
+            </Box>
+          </Box>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={6}>
+              <Button
+                variant="contained"
+                color="success"
+                fullWidth
+                size="large"
+                disabled={actionLoading}
+                startIcon={<CheckCircleIcon />}
+                sx={{
+                  borderRadius: 7,
+                  fontWeight: 700,
+                  fontSize: 18,
+                  boxShadow: "0 8px 22px #2cff6e33",
+                  background: "linear-gradient(90deg,#2cff6e 60%,#FFD600 100%)",
+                  color: "#181818",
+                  "&:hover": {
+                    background: "linear-gradient(90deg,#FFD600 60%,#2cff6e 100%)",
+                    color: "#111"
+                  }
+                }}
+                onClick={() => onAction("accept")}
+              >
+                Accept
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                variant="contained"
+                color="error"
+                fullWidth
+                size="large"
+                disabled={actionLoading}
+                startIcon={<CancelIcon />}
+                sx={{
+                  borderRadius: 7,
+                  fontWeight: 700,
+                  fontSize: 18,
+                  boxShadow: "0 8px 22px #e5393555",
+                  background: "linear-gradient(90deg,#FFD600 30%,#e53935 100%)",
+                  color: "#181818",
+                  "&:hover": {
+                    background: "linear-gradient(90deg,#e53935 50%,#FFD600 100%)",
+                    color: "#fff"
+                  }
+                }}
+                onClick={() => onAction("cancel")}
+              >
+                Cancel
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
       )}
     </DialogContent>
   </Dialog>
 );
 
-// ---- Photographer Top Bar ----
-const PhotographerTopBar = ({ user }) => {
+const PhotographerTopBar = () => {
+  // Always get user fresh on render, since localStorage might change
+  const user = JSON.parse(localStorage.getItem("user") || "null");
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -95,13 +230,13 @@ const PhotographerTopBar = ({ user }) => {
 
   const navigate = useNavigate();
 
-  // Fetch portfolio status
   useEffect(() => {
+    // If user is missing, no need to fetch
+    if (!user) return;
     const fetchPortfolio = async () => {
       try {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
         const res = await axios.get(
-          `http://localhost:5000/api/portfolios/user/${storedUser.id}`
+          `http://localhost:5000/api/portfolios/user/${user.id}`
         );
         setHasPortfolio(!!res.data);
       } catch {
@@ -109,9 +244,8 @@ const PhotographerTopBar = ({ user }) => {
       }
     };
     fetchPortfolio();
-  }, []);
+  }, [user]);
 
-  // Fetch notifications for this user (photographer)
   const fetchNotifications = useCallback(async () => {
     setNotifLoading(true);
     setNotifError(null);
@@ -131,17 +265,15 @@ const PhotographerTopBar = ({ user }) => {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000); // Poll every 10s
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
-  // Menu handlers
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleNotifClick = (event) => setNotifAnchorEl(event.currentTarget);
   const handleNotifClose = () => setNotifAnchorEl(null);
 
-  // Logout handler
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
@@ -161,7 +293,10 @@ const PhotographerTopBar = ({ user }) => {
     navigate("/photographer/UpcomingEventSchedule");
   };
 
-  // When a notification is clicked: fetch booking details and open dialog
+  const handleBookingsClick = () => {
+    navigate("/photographer/PhotographerBookings");
+  };
+
   const handleNotifSelect = async (notif) => {
     setSelectedNotif(notif);
     setNotifAnchorEl(null);
@@ -184,7 +319,6 @@ const PhotographerTopBar = ({ user }) => {
     }
   };
 
-  // Mark notification as read after closing dialog or after an action
   const markNotifAsRead = async (notifId) => {
     try {
       const token = localStorage.getItem("token");
@@ -197,7 +331,6 @@ const PhotographerTopBar = ({ user }) => {
     } catch {}
   };
 
-  // Accept or cancel the booking
   const handleBookingAction = async (action) => {
     if (!bookingDetails) return;
     setActionLoading(true);
@@ -214,14 +347,13 @@ const PhotographerTopBar = ({ user }) => {
       }
       setSelectedNotif(null);
       setBookingDetails(null);
-      fetchNotifications(); // Refresh notification list
+      fetchNotifications();
     } catch (e) {
       alert("Failed to update booking status.");
     }
     setActionLoading(false);
   };
 
-  // When dialog closes (no action), mark notification as read
   const handleDialogClose = async () => {
     setDialogOpen(false);
     if (selectedNotif) {
@@ -231,7 +363,6 @@ const PhotographerTopBar = ({ user }) => {
     setBookingDetails(null);
   };
 
-  // Show notification icon with badge
   const notifBadge = (
     <Badge
       color="error"
@@ -242,11 +373,23 @@ const PhotographerTopBar = ({ user }) => {
     </Badge>
   );
 
+  // --- MAIN RENDER ---
+  if (!user) {
+    return (
+      <AppBar position="fixed" sx={{ backgroundColor: "#222" }}>
+        <Toolbar>
+          <Typography sx={{ color: "#FFD600", fontWeight: 700 }}>
+            Loading...
+          </Typography>
+        </Toolbar>
+      </AppBar>
+    );
+  }
+
   return (
     <>
       <AppBar position="fixed" sx={{ backgroundColor: "#222" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* Logo + Title */}
           <Box
             display="flex"
             alignItems="center"
@@ -258,16 +401,13 @@ const PhotographerTopBar = ({ user }) => {
               EventClick
             </Typography>
           </Box>
-
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            justifyContent="flex-end"
-            sx={{ width: "auto" }}
-          >
+          <Grid container spacing={2} alignItems="center" justifyContent="flex-end" sx={{ width: "auto" }}>
             <Grid item>
-              <Typography variant="body1" sx={{ color: "white", fontWeight: "bold" }}>
+              <Typography
+                variant="body1"
+                sx={{ color: "white", fontWeight: "bold", cursor: "pointer" }}
+                onClick={handleBookingsClick}
+              >
                 Booking
               </Typography>
             </Grid>
@@ -289,7 +429,6 @@ const PhotographerTopBar = ({ user }) => {
                 Schedule
               </Typography>
             </Grid>
-            {/* Notification Icon */}
             <Grid item>
               <Tooltip title="Booking Notifications" arrow>
                 <IconButton
@@ -353,12 +492,11 @@ const PhotographerTopBar = ({ user }) => {
                 </Box>
               </Menu>
             </Grid>
-            {/* Profile Dropdown */}
             <Grid item>
               <Box display="flex" alignItems="center">
                 <Avatar
                   src={
-                    user.profilePicture
+                    user?.profilePicture
                       ? `http://localhost:5000/${user.profilePicture}`
                       : "https://via.placeholder.com/40"
                   }
@@ -392,7 +530,7 @@ const PhotographerTopBar = ({ user }) => {
                       fontWeight="bold"
                       sx={{ color: "#333" }}
                     >
-                      👤 {user.name}
+                      👤 {user?.name || "Photographer"}
                     </Typography>
                   </Box>
                   <Divider />
@@ -406,8 +544,6 @@ const PhotographerTopBar = ({ user }) => {
           </Grid>
         </Toolbar>
       </AppBar>
-
-      {/* Notification Booking Details Dialog */}
       <NotificationDialog
         open={dialogOpen}
         booking={bookingDetails}

@@ -21,6 +21,7 @@ import UpcomingEventSchedule from "./Components/Schedule/UpcomingEventSchedule.j
 import EventScheduleForm from "./Components/Schedule/EventScheduleForm.jsx";   
 import BookingForm from "./Components/Client/BookingForm.jsx";     
 import ViewBookings from "./Components/Client/ViewBookings.jsx";
+import PhotographerBookings from "./Components/Photographer/Booking/PhotographerBookings.jsx"
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
         <Route path="/photographer/EventScheduleForm" element={<EventScheduleForm />} />
         <Route path="/Client/BookingForm/:photographerId" element={<BookingForm />} />
         <Route path="/Client/ViewBookings" element={<ViewBookings />} />
+        <Route path="/photographer/PhotographerBookings" element={<PhotographerBookings />} />
 
         
       </Routes>

@@ -1,57 +1,193 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   AppBar, Toolbar, Typography, Box, Avatar, Grid, IconButton, Menu,
-  MenuItem, Divider, Badge, Tooltip, CircularProgress, Dialog, DialogTitle, DialogContent, Button
+  MenuItem, Divider, Badge, Tooltip, CircularProgress, Dialog, DialogTitle, DialogContent, Button, Chip
 } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import InfoIcon from "@mui/icons-material/Info";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const statusMap = {
+  Accepted: {
+    label: "Accepted",
+    color: "#2cff6e",
+    icon: <CheckCircleIcon sx={{ fontSize: 22, verticalAlign: "-5px" }} />
+  },
+  Cancelled: {
+    label: "Cancelled",
+    color: "#e53935",
+    icon: <CancelIcon sx={{ fontSize: 22, verticalAlign: "-5px" }} />
+  },
+  Pending: {
+    label: "Pending",
+    color: "#FFD600",
+    icon: <HourglassEmptyIcon sx={{ fontSize: 22, verticalAlign: "-5px" }} />
+  }
+};
+
+const getStatusChip = (status) => {
+  const s = statusMap[status] || statusMap.Pending;
+  return (
+    <Chip
+      label={s.label}
+      icon={s.icon}
+      sx={{
+        background: s.color,
+        color: "#181818",
+        fontWeight: "bold",
+        fontSize: 17,
+        px: 2.2,
+        py: 1.5,
+        borderRadius: "15px",
+        boxShadow: "0 2px 10px 0 #0004",
+        letterSpacing: 0.7,
+        ml: 1
+      }}
+    />
+  );
+};
+
+// --- Notification Dialog ---
 const NotificationDialog = ({
   open, booking, onClose, notifMessage, loading
 }) => (
-  <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-    <DialogTitle sx={{
-      background: "#181818", color: "#FFD600", fontWeight: 700, fontSize: 24, letterSpacing: 1
-    }}>
+  <Dialog
+    open={open}
+    onClose={onClose}
+    maxWidth="xs"
+    fullWidth
+    PaperProps={{
+      sx: {
+        background: "rgba(22,22,22,0.85)",
+        borderRadius: "28px",
+        boxShadow: "0 8px 40px #FFD60066, 0 1.5px 9px #000a",
+        overflow: "hidden",
+        border: "2.5px solid #FFD600",
+        backdropFilter: "blur(10px)",
+      }
+    }}
+  >
+    <DialogTitle
+      sx={{
+        color: "#FFD600",
+        fontWeight: 800,
+        fontSize: 27,
+        letterSpacing: 1.5,
+        px: 3,
+        py: 2.5,
+        boxShadow: "0 2px 12px #FFD60033",
+        borderBottom: "2px solid #FFD600",
+        background: "linear-gradient(90deg, #222 80%, #FFD60022 100%)",
+        position: "relative"
+      }}
+    >
       Booking Update
+      {booking && (
+        <Box sx={{ position: "absolute", right: 28, top: 22 }}>
+          {getStatusChip(booking.status)}
+        </Box>
+      )}
     </DialogTitle>
-    <DialogContent sx={{ background: "#222", pb: 3 }}>
+    <DialogContent sx={{ p: { xs: 2, md: 4 } }}>
       {loading ? (
-        <Box sx={{ textAlign: "center", p: 3 }}>
-          <CircularProgress size={40} sx={{ color: "#FFD600" }} />
+        <Box sx={{ textAlign: "center", py: 4 }}>
+          <CircularProgress size={50} sx={{ color: "#FFD600" }} />
         </Box>
       ) : !booking ? (
-        <Typography sx={{ color: "#e53935", my: 2 }}>Booking details not found.</Typography>
+        <Typography sx={{ color: "#e53935", my: 3, fontSize: 20, textAlign: "center" }}>
+          Booking details not found.
+        </Typography>
       ) : (
-        <>
-          <Typography sx={{ color: "#FFD600", fontWeight: 600, fontSize: 17, mb: 1 }}>
-            <InfoIcon sx={{ fontSize: 18, mr: 1 }} />
-            {notifMessage}
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+            <Avatar
+              src={
+                booking.photographer?.profilePicture
+                  ? `http://localhost:5000/uploads/${booking.photographer.profilePicture}`
+                  : undefined
+              }
+              sx={{
+                width: 52,
+                height: 52,
+                background: "#FFD600",
+                color: "#181818",
+                fontSize: 30,
+                boxShadow: "0 2px 8px #FFD60055"
+              }}
+            >
+              <CameraAltIcon fontSize="inherit" />
+            </Avatar>
+            <Box>
+              <Typography sx={{ color: "#FFD600", fontWeight: 700, fontSize: 19 }}>
+                {booking.photographer?.shopName}
+              </Typography>
+              <Typography sx={{ color: "#fff", fontWeight: 500, fontSize: 16 }}>
+                {booking.photographer?.photographerName}
+              </Typography>
+            </Box>
+          </Box>
+          <Typography sx={{
+            color: "#ffe082", fontSize: 16, mb: 2, mt: 1.5,
+            background: "#232323cc", px: 2, py: 1, borderRadius: 2
+          }}>
+            <b>Status Update:</b> {notifMessage}
           </Typography>
-          <Typography sx={{ color: "#fff", mb: 1 }}>
-            <CalendarMonthIcon sx={{ color: "#FFD600", fontSize: 16, mr: 0.6 }} />
-            {booking.date} &nbsp;
-            <AccessTimeIcon sx={{ color: "#FFD600", fontSize: 16, mr: 0.6 }} />
-            {booking.time}
-          </Typography>
-          <Typography sx={{ color: "#fffde7", mb: 1 }}>
-            <LocationOnIcon sx={{ color: "#FFD600", fontSize: 16, mr: 1 }} />
-            {booking.address}
-          </Typography>
-          <Typography sx={{ color: "#fffde7", mb: 2 }}>
-            {booking.description || <i>No description</i>}
-          </Typography>
-        </>
+          <Box sx={{ color: "#fff", mb: 2, fontSize: 17 }}>
+            <Box display="flex" alignItems="center" mb={1}>
+              <EventAvailableIcon sx={{ color: "#FFD600", fontSize: 20, mr: 1 }} />
+              {booking.eventType}
+            </Box>
+            <Box display="flex" alignItems="center" mb={1}>
+              <CalendarMonthIcon sx={{ color: "#FFD600", fontSize: 20, mr: 1 }} />
+              {booking.date} &nbsp;
+              <AccessTimeIcon sx={{ color: "#FFD600", fontSize: 20, ml: 2, mr: 1 }} />
+              {booking.time}
+            </Box>
+            <Box display="flex" alignItems="center" mb={1}>
+              <LocationOnIcon sx={{ color: "#FFD600", fontSize: 20, mr: 1 }} />
+              {booking.address}
+            </Box>
+            <Box sx={{ background: "#222c", px: 2, py: 1, borderRadius: 2, mb: 2 }}>
+              {booking.description || <i style={{ color: "#FFD600" }}>No description</i>}
+            </Box>
+          </Box>
+        </Box>
       )}
-      <Box textAlign="right" mt={2}>
-        <Button onClick={onClose} color="warning" variant="contained">Close</Button>
+      <Box textAlign="center" mt={2}>
+        <Button
+          onClick={onClose}
+          color="warning"
+          variant="contained"
+          size="large"
+          sx={{
+            fontWeight: 700,
+            fontSize: 18,
+            borderRadius: 7,
+            px: 4,
+            py: 1.2,
+            background: "linear-gradient(90deg,#ffd600 60%,#fffde7 100%)",
+            color: "#181818",
+            boxShadow: "0 8px 22px #FFD60044",
+            transition: "0.18s",
+            "&:hover": {
+              background: "linear-gradient(90deg,#fffde7 60%,#ffd600 100%)",
+              color: "#000",
+              transform: "scale(1.04)"
+            }
+          }}
+        >
+          Close
+        </Button>
       </Box>
     </DialogContent>
   </Dialog>
@@ -80,7 +216,6 @@ const ClientTopBar = () => {
       const res = await axios.get("http://localhost:5000/api/notifications", {
         headers: { Authorization: token },
       });
-      // Only status notifications for this user
       setNotifications((res.data || []).filter((n) => !n.isRead && n.type === "status"));
     } catch (e) {
       setNotifError("Failed to load notifications");
@@ -90,19 +225,15 @@ const ClientTopBar = () => {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000); // Poll every 10s
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
-  // --- Profile menu handlers ---
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
-  // --- Notification menu handlers ---
   const handleNotifClick = (event) => setNotifAnchorEl(event.currentTarget);
   const handleNotifClose = () => setNotifAnchorEl(null);
 
-  // --- Logout, edit, view bookings ---
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -116,7 +247,6 @@ const ClientTopBar = () => {
     navigate("/Client/ViewBookings");
   };
 
-  // --- On notification click: show booking details ---
   const handleNotifSelect = async (notif) => {
     setSelectedNotif(notif);
     setNotifAnchorEl(null);
@@ -142,7 +272,6 @@ const ClientTopBar = () => {
     setDialogLoading(false);
   };
 
-  // --- Mark notification as read ---
   const markNotifAsRead = async (notifId) => {
     try {
       const token = localStorage.getItem("token");
@@ -155,7 +284,6 @@ const ClientTopBar = () => {
     } catch {}
   };
 
-  // --- When dialog closes ---
   const handleDialogClose = async () => {
     setDialogOpen(false);
     if (selectedNotif) {
@@ -165,7 +293,6 @@ const ClientTopBar = () => {
     setBookingDetails(null);
   };
 
-  // --- Notification bell with badge ---
   const notifBadge = (
     <Badge
       color="error"
@@ -202,7 +329,6 @@ const ClientTopBar = () => {
                 Bookings
               </Typography>
             </Grid>
-            {/* --- Notification Icon --- */}
             <Grid item>
               <Tooltip title="Booking Status Notifications" arrow>
                 <IconButton
@@ -303,7 +429,6 @@ const ClientTopBar = () => {
           </Grid>
         </Toolbar>
       </AppBar>
-      {/* Notification Booking Details Dialog */}
       <NotificationDialog
         open={dialogOpen}
         booking={bookingDetails}
