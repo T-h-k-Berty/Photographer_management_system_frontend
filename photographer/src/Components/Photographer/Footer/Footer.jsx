@@ -5,6 +5,9 @@ import {
   Typography,
   IconButton,
   Divider,
+  Link,
+  Stack,
+  useTheme,
 } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -13,100 +16,208 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
-import "bootstrap/dist/css/bootstrap.min.css";
 
-const Footer = () => {
-  return (
-    <Box
-      sx={{
-        backgroundColor: "#222",
-        color: "#eee",
-        borderTopLeftRadius: "40px",
-        borderTopRightRadius: "40px",
-        px: 5,
-        pt: 6,
-        pb: 2,
-        mt: 8,
-      }}
-    >
-      <div className="container">
-        <Grid container spacing={4} justifyContent="space-between">
-          {/* Logo & Description */}
-          <Grid item xs={12} md={3}>
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-              EventClick
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#bbb", mb: 2 }}>
-              Your Story, Our Lens – Find the Right Photographer for Every Occasion. Join thousands who trust EventClick to capture their unforgettable moments.
-            </Typography>
-            <Box>
-              <IconButton sx={{ color: "#fff", mr: 1 }}><FacebookIcon /></IconButton>
-              <IconButton sx={{ color: "#fff", mr: 1 }}><WhatsAppIcon /></IconButton>
-              <IconButton sx={{ color: "#fff", mr: 1 }}><TwitterIcon /></IconButton>
-              <IconButton sx={{ color: "#fff" }}><InstagramIcon /></IconButton>
-            </Box>
-          </Grid>
+const gold = "#FFD600";
 
-          {/* Quick Links */}
-          <Grid item xs={6} md={2}>
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
-              Quick Links
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#ccc", mb: 1 }}>About Us</Typography>
-            <Typography variant="body2" sx={{ color: "#ccc", mb: 1 }}>FAQ</Typography>
-            <Typography variant="body2" sx={{ color: "#ccc", mb: 1 }}>Help & Support</Typography>
-            <Typography variant="body2" sx={{ color: "#ccc" }}>Contact</Typography>
-          </Grid>
+const footerLinks = [
+  { label: "About Us", to: "#" },
+  { label: "FAQ", to: "#" },
+  { label: "Help & Support", to: "#" },
+  { label: "Contact", to: "#" },
+];
 
-          {/* Explore */}
-          <Grid item xs={6} md={2}>
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
-              Explore
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#ccc", mb: 1 }}>Photographers</Typography>
-            <Typography variant="body2" sx={{ color: "#ccc", mb: 1 }}>Events</Typography>
-            <Typography variant="body2" sx={{ color: "#ccc", mb: 1 }}>Portfolio</Typography>
-            <Typography variant="body2" sx={{ color: "#ccc" }}>Packages</Typography>
-          </Grid>
+const exploreLinks = [
+  { label: "Photographers", to: "#" },
+  { label: "Events", to: "#" },
+  { label: "Portfolio", to: "#" },
+  { label: "Packages", to: "#" },
+];
 
-          {/* Contact Us */}
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
-              Contact Us
-            </Typography>
-            <Box display="flex" alignItems="center" mb={1}>
-              <LocationOnIcon sx={{ color: "#bbb", mr: 1 }} />
-              <Typography variant="body2" sx={{ color: "#ccc" }}>
-                Colombo, Sri Lanka
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" mb={1}>
-              <EmailIcon sx={{ color: "#bbb", mr: 1 }} />
-              <Typography variant="body2" sx={{ color: "#ccc" }}>
-                support@eventclick.lk
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <PhoneIcon sx={{ color: "#bbb", mr: 1 }} />
-              <Typography variant="body2" sx={{ color: "#ccc" }}>
-                +94 77 123 4567
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
+const socials = [
+  { icon: <FacebookIcon />, to: "#", label: "Facebook" },
+  { icon: <WhatsAppIcon />, to: "#", label: "WhatsApp" },
+  { icon: <TwitterIcon />, to: "#", label: "Twitter" },
+  { icon: <InstagramIcon />, to: "#", label: "Instagram" },
+];
 
-        {/* Divider */}
-        <Divider sx={{ borderColor: "#444", my: 4 }} />
+const Footer = () => (
+  <Box
+    sx={{
+      background: `linear-gradient(120deg, #222 85%, ${gold}11 100%)`,
+      color: "#f4f4f4",
+      borderTopLeftRadius: { xs: "28px", md: "54px" },
+      borderTopRightRadius: { xs: "28px", md: "54px" },
+      px: { xs: 2, sm: 5, md: 9 },
+      pt: { xs: 6, md: 7 },
+      pb: 0,
+      mt: { xs: 7, md: 10 },
+      boxShadow: "0 -8px 38px 0 #000b",
+      zIndex: 2,
+      position: "relative",
+    }}
+  >
+    <Grid container spacing={4} alignItems="flex-start" justifyContent="center">
+      {/* Quick Links */}
+      <Grid item xs={12} sm={6} md={3} lg={2}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: gold, mb: 1 }}>
+          Quick Links
+        </Typography>
+        {footerLinks.map((l) => (
+          <Link
+            key={l.label}
+            href={l.to}
+            underline="none"
+            sx={{
+              color: "#eee",
+              fontWeight: 500,
+              fontSize: 15,
+              display: "block",
+              mb: 1.1,
+              transition: "color 0.2s",
+              "&:hover": { color: gold, textDecoration: "underline" },
+            }}
+          >
+            {l.label}
+          </Link>
+        ))}
+      </Grid>
 
-        {/* Bottom text */}
-        <Box textAlign="center" pb={2}>
-          <Typography variant="body2" sx={{ color: "#888" }}>
-            © {new Date().getFullYear()} EventClick. All rights reserved.
+      {/* Center: Brand & Paragraph */}
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={5}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: { xs: "flex-start", md: "center" },
+          textAlign: { xs: "left", md: "center" },
+          my: { xs: 3, md: 0 },
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 900,
+            letterSpacing: 1,
+            color: gold,
+            mb: 2,
+            fontSize: { xs: "2rem", sm: "2.2rem", md: "2.4rem" },
+          }}
+        >
+          EventClick
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "#ccc",
+            mb: 2.5,
+            fontWeight: 400,
+            lineHeight: 1.6,
+            maxWidth: 530,
+          }}
+        >
+          Your Story, Our Lens – Find the Right Photographer for Every Occasion.<br />
+          <span style={{ color: gold, fontWeight: 700 }}>
+            Join thousands who trust EventClick
+          </span>{" "}
+          to capture their unforgettable moments.
+        </Typography>
+        {/* Social Media */}
+        <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+          {socials.map(({ icon, to, label }) => (
+            <IconButton
+              key={label}
+              component="a"
+              href={to}
+              target="_blank"
+              rel="noopener"
+              aria-label={label}
+              sx={{
+                border: `2.5px solid ${gold}`,
+                bgcolor: "transparent",
+                color: gold,
+                borderRadius: "50%",
+                p: 1.1,
+                mx: 0.3,
+                boxShadow: "0 1px 7px #FFD60022",
+                transition: "all 0.22s",
+                "&:hover": {
+                  bgcolor: gold,
+                  color: "#191919",
+                  transform: "scale(1.15)",
+                  boxShadow: "0 2px 14px #FFD60055",
+                },
+              }}
+            >
+              {icon}
+            </IconButton>
+          ))}
+        </Stack>
+      </Grid>
+
+      {/* Explore */}
+      <Grid item xs={12} sm={6} md={3} lg={2}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: gold, mb: 1 }}>
+          Explore
+        </Typography>
+        {exploreLinks.map((l) => (
+          <Link
+            key={l.label}
+            href={l.to}
+            underline="none"
+            sx={{
+              color: "#eee",
+              fontWeight: 500,
+              fontSize: 15,
+              display: "block",
+              mb: 1.1,
+              transition: "color 0.2s",
+              "&:hover": { color: gold, textDecoration: "underline" },
+            }}
+          >
+            {l.label}
+          </Link>
+        ))}
+      </Grid>
+
+      {/* Contact Us */}
+      <Grid item xs={12} md={6} lg={3}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: gold, mb: 1 }}>
+          Contact Us
+        </Typography>
+        <Box display="flex" alignItems="center" mb={1.2}>
+          <LocationOnIcon sx={{ color: gold, mr: 1, fontSize: 23 }} />
+          <Typography variant="body2" sx={{ color: "#ccc", fontSize: 16 }}>
+            Colombo, Sri Lanka
           </Typography>
         </Box>
-      </div>
+        <Box display="flex" alignItems="center" mb={1.2}>
+          <EmailIcon sx={{ color: gold, mr: 1, fontSize: 23 }} />
+          <Typography variant="body2" sx={{ color: "#ccc", fontSize: 16 }}>
+            support@eventclick.lk
+          </Typography>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <PhoneIcon sx={{ color: gold, mr: 1, fontSize: 23 }} />
+          <Typography variant="body2" sx={{ color: "#ccc", fontSize: 16 }}>
+            +94 77 123 4567
+          </Typography>
+        </Box>
+      </Grid>
+    </Grid>
+
+    <Divider sx={{ borderColor: "#FFD60033", my: { xs: 3, md: 5 }, mx: -3 }} />
+
+    {/* Bottom Bar */}
+    <Box textAlign="center" pb={3} pt={1} fontSize={15} sx={{ color: "#aaa", letterSpacing: 0.5 }}>
+      <span style={{ color: gold, fontWeight: 600 }}>
+        © {new Date().getFullYear()} EventClick.
+      </span>{" "}
+      All rights reserved.
     </Box>
-  );
-};
+  </Box>
+);
 
 export default Footer;

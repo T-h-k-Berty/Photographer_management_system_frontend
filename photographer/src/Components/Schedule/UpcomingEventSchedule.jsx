@@ -9,6 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TopBar from "../Photographer/TopBar/TopBar";
+import Footer from "../Photographer/Footer/Footer";
 
 const UpcomingEventSchedule = () => {
   const navigate = useNavigate();
@@ -158,6 +159,7 @@ const UpcomingEventSchedule = () => {
           </Table>
         </Paper>
       </Box>
+      <Footer />
     </>
   );
 };

@@ -102,7 +102,7 @@ const Home = () => {
 
       {/* Popular Photographers Section */}
       <PopularPhotographers />
-      <Footer />
+    
     </>
 
     

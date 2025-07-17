@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Footer from "../Footer/Footer";
 
 const PopularPhotographers = () => {
   const [photographers, setPhotographers] = useState([]);
@@ -61,6 +62,7 @@ const PopularPhotographers = () => {
   };
 
   return (
+    <>
     <Box
       sx={{
         textAlign: "center",
@@ -212,6 +214,8 @@ const PopularPhotographers = () => {
         })}
       </Grid>
     </Box>
+       <Footer />
+       </>
   );
 };
 

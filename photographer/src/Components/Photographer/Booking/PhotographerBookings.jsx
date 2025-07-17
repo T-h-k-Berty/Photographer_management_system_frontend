@@ -13,6 +13,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import TopBar from "../TopBar/TopBar";
 import axios from "axios";
+import Footer from "../Footer/Footer";
 
 // --- Status chip mapping ---
 const statusMap = {
@@ -284,6 +285,7 @@ const PhotographerBookings = () => {
           </Grid>
         </Grid>
       </Box>
+      <Footer />
     </>
   );
 };

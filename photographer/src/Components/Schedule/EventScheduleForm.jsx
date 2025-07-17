@@ -12,6 +12,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import TopBar from "../Photographer/TopBar/TopBar";
+import Footer from "../Photographer/Footer/Footer";
 
 // Sri Lankan districts
 const places = [
@@ -262,6 +263,7 @@ const EventScheduleForm = () => {
           </form>
         </Paper>
       </Box>
+      <Footer />
     </>
   );
 };

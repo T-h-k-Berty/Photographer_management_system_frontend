@@ -30,6 +30,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopBar from "../Photographer/TopBar/TopBar";
+import Footer from "../Photographer/Footer/Footer";
 
 const statusMap = {
   pending: {
@@ -391,6 +392,7 @@ const ViewBookings = () => {
         </Alert>
       </Snackbar>
     </Box>
+    <Footer />
     </>
   );
 };

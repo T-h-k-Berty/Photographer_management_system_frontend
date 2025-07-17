@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Footer from "../Footer/Footer";
 import {
   Box,
   Typography,
@@ -702,9 +703,7 @@ const PhotographerPortfolio = () => {
           </Box>
         </Box>
 
-        <Box mt={12} py={5} textAlign="center" borderTop={`1px solid ${theme.border}`} color={theme.textSecondary}>
-          <Typography variant="body2">© {new Date().getFullYear()} EventClick – Showcase. Inspire. Connect.</Typography>
-        </Box>
+       
       </Box>
       {/* Add Keyframes for Bounce/Glow Animation */}
       <style>
@@ -716,6 +715,7 @@ const PhotographerPortfolio = () => {
           }
         `}
       </style>
+      <Footer />
     </>
   );
 };
