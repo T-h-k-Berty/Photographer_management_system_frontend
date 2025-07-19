@@ -14,16 +14,20 @@ import {
   IconButton,
   Chip,
   Autocomplete,
+  InputAdornment,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import axios from "axios";
 import TopBar from "../TopBar/TopBar";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Footer from "../Footer/Footer";
-
 
 const eventTypes = ["Wedding", "Fashion", "Nature", "Beach"];
 const sriLankanLocations = [
@@ -51,16 +55,22 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-  
+
   useEffect(() => {
     if (initialData) {
       setPersonalDetails(initialData.personalDetails);
       setGalleries(initialData.galleries);
       setPackages(initialData.packages);
       setLocations(initialData.locations);
+      setSocialLinks(initialData.socialLinks || {
+        facebook: "",
+        instagram: "",
+        twitter: "",
+        whatsapp: "",
+      });
     }
   }, [initialData]);
-  
+
   const [personalDetails, setPersonalDetails] = useState({
     shopName: "",
     photographerName: "",
@@ -76,6 +86,12 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
   const [packages, setPackages] = useState([
     { title: "", description: "", price: "" },
   ]);
+  const [socialLinks, setSocialLinks] = useState({
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    whatsapp: "",
+  });
 
   const handlePersonalChange = (e) => {
     const { name, value, files } = e.target;
@@ -118,16 +134,22 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
     setPackages(packages.filter((_, i) => i !== index));
   };
 
+  const handleSocialLinkChange = (e) => {
+    const { name, value } = e.target;
+    setSocialLinks({ ...socialLinks, [name]: value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const payload = {
       personalDetails,
       galleries,
       packages,
       locations,
+      socialLinks,
     };
-  
+
     if (isEdit && onSubmit) {
       await onSubmit(payload);
       return;
@@ -143,6 +165,7 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
       formData.append("backgroundPicture", personalDetails.backgroundPicture);
       formData.append("selectedEvents", JSON.stringify(personalDetails.selectedEvents));
       formData.append("locations", JSON.stringify(locations));
+      formData.append("socialLinks", JSON.stringify(socialLinks));
 
       const galleryData = [];
       galleries.forEach((gallery, index) => {
@@ -172,18 +195,14 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
     }
   };
 
-  
-  
-  
-  
   return (
     <>
       <TopBar />
       <Box sx={{ backgroundColor: "#000", minHeight: "100vh", py: 6, color: "white", pt: 10 }}>
         <Box maxWidth="1000px" mx="auto">
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-  {isEdit ? "Edit Portfolio" : "Create Portfolio"}
-</Typography>
+          <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+            {isEdit ? "Edit Portfolio" : "Create Portfolio"}
+          </Typography>
 
           <Typography variant="h5" gutterBottom>Personal Details</Typography>
           <Grid container spacing={2} className="mb-4">
@@ -203,7 +222,9 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
             ))}
             {["profilePicture", "backgroundPicture"].map((imgField, idx) => (
               <Grid item xs={12} key={idx}>
-                <Typography>{imgField.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}:</Typography>
+                <Typography>
+                  {imgField.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}:
+                </Typography>
                 <input
                   type="file"
                   name={imgField}
@@ -213,6 +234,92 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                 />
               </Grid>
             ))}
+
+            {/* --- Social Media Fields --- */}
+            <Grid item xs={12}>
+              <Typography sx={{ mt: 2, mb: 1, fontWeight: 500 }}>
+                Social Media Links (optional)
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TextField
+                    fullWidth
+                    name="facebook"
+                    label="Facebook"
+                    value={socialLinks.facebook}
+                    onChange={handleSocialLinkChange}
+                    sx={inputStyle}
+                    variant="outlined"
+                    placeholder="https://facebook.com/yourprofile"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FacebookIcon sx={{ color: "#1877f3" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TextField
+                    fullWidth
+                    name="instagram"
+                    label="Instagram"
+                    value={socialLinks.instagram}
+                    onChange={handleSocialLinkChange}
+                    sx={inputStyle}
+                    variant="outlined"
+                    placeholder="https://instagram.com/yourprofile"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <InstagramIcon sx={{ color: "#E4405F" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TextField
+                    fullWidth
+                    name="twitter"
+                    label="Twitter"
+                    value={socialLinks.twitter}
+                    onChange={handleSocialLinkChange}
+                    sx={inputStyle}
+                    variant="outlined"
+                    placeholder="https://twitter.com/yourprofile"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <TwitterIcon sx={{ color: "#1DA1F2" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TextField
+                    fullWidth
+                    name="whatsapp"
+                    label="WhatsApp"
+                    value={socialLinks.whatsapp}
+                    onChange={handleSocialLinkChange}
+                    sx={inputStyle}
+                    variant="outlined"
+                    placeholder="https://wa.me/your-number"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <WhatsAppIcon sx={{ color: "#25D366" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
             <Grid item xs={12}>
               <Typography>Locations:</Typography>
               <Autocomplete
@@ -253,7 +360,6 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
             </Grid>
           </Grid>
         {/* Gallery Section */}
-       {/* Gallery Section */}
         <Typography variant="h5" gutterBottom>Adding Gallery</Typography>
         <Grid container spacing={3}>
           {galleries.map((gallery, idx) => (
@@ -433,15 +539,15 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
               fontSize: "1rem",
               borderRadius: "30px"
             }}
-            >
+          >
             Submit
           </Button>
         </Box>
       </Box>
     </Box>
     <Footer />
-  </>
-);
+    </>
+  );
 };
 
 export default CreatePortfolio;

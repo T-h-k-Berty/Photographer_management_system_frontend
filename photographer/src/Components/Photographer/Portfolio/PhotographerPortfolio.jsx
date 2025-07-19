@@ -34,6 +34,43 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import dayjs from "dayjs";
 
+// Social Media Icons
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+
+const socialLinksConfig = [
+  {
+    field: "facebook",
+    Icon: FacebookIcon,
+    color: "#1877f3",
+    tooltip: "Facebook",
+    baseUrl: "", // Will use whatever the backend gives (should be full URL)
+  },
+  {
+    field: "instagram",
+    Icon: InstagramIcon,
+    color: "#e1306c",
+    tooltip: "Instagram",
+    baseUrl: "",
+  },
+  {
+    field: "twitter",
+    Icon: TwitterIcon,
+    color: "#1da1f2",
+    tooltip: "Twitter",
+    baseUrl: "",
+  },
+  {
+    field: "whatsapp",
+    Icon: WhatsAppIcon,
+    color: "#25d366",
+    tooltip: "WhatsApp",
+    baseUrl: "",
+  },
+];
+
 const PhotographerPortfolio = () => {
   const [portfolio, setPortfolio] = useState(null);
   const [darkMode, setDarkMode] = useState(true);
@@ -150,6 +187,60 @@ const PhotographerPortfolio = () => {
     cardText: darkMode ? "#eee" : "#333",
     border: darkMode ? "#333" : "#ddd",
     shadow: darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.1)",
+  };
+
+  // --- Social Links Render Helper
+  const renderSocialLinks = () => {
+    // Collect only available (non-empty) links
+    const socialLinks = socialLinksConfig
+      .map(({ field, Icon, color, tooltip, baseUrl }) => {
+        const value = portfolio[field];
+        if (value && typeof value === "string" && value.trim().length > 0) {
+          let link = value.trim();
+          // Add protocol if missing (e.g. for WhatsApp numbers)
+          if (field === "whatsapp" && !link.startsWith("http")) {
+            link = `https://wa.me/${link.replace(/[^0-9]/g, "")}`;
+          } else if (!link.startsWith("http")) {
+            link = "https://" + link;
+          }
+          return { Icon, color, tooltip, link };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    if (socialLinks.length === 0) return null;
+
+    return (
+      <Box mt={2} display="flex" justifyContent="center" gap={3}>
+        {socialLinks.map(({ Icon, color, tooltip, link }, idx) => (
+          <MuiTooltip title={tooltip} key={idx}>
+            <IconButton
+              component="a"
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: color,
+                border: `2px solid ${color}44`,
+                backgroundColor: darkMode ? "#232323" : "#fff",
+                boxShadow: "0 2px 10px 0 #0002",
+                transition: "background 0.2s, transform 0.2s",
+                "&:hover": {
+                  backgroundColor: color + "11",
+                  transform: "scale(1.13)",
+                },
+                mx: 0.5,
+                width: 54,
+                height: 54,
+              }}
+            >
+              <Icon sx={{ fontSize: 34 }} />
+            </IconButton>
+          </MuiTooltip>
+        ))}
+      </Box>
+    );
   };
 
   return (
@@ -346,6 +437,11 @@ const PhotographerPortfolio = () => {
                   </Typography>
                 </Box>
               </Box>
+
+              {/* ===== Social Media Icons Section ===== */}
+              {renderSocialLinks()}
+              {/* ===== End Social Section ===== */}
+
             </Box>
           </Paper>
         </Zoom>
@@ -702,8 +798,6 @@ const PhotographerPortfolio = () => {
             </Grid>
           </Box>
         </Box>
-
-       
       </Box>
       {/* Add Keyframes for Bounce/Glow Animation */}
       <style>

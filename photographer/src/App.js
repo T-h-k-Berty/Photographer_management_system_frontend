@@ -23,7 +23,11 @@ import BookingForm from "./Components/Client/BookingForm.jsx";
 import ViewBookings from "./Components/Client/ViewBookings.jsx";
 import PhotographerSearchBar from "./Components/Photographer/Home/PhotographerSearchBar.jsx";
 import PhotographerBookings from "./Components/Photographer/Booking/PhotographerBookings.jsx"
-
+import AboutUs from "./Components/Photographer/Footer/About Us.jsx";
+import HelpSupport from "./Components/Photographer/Footer/Help and Support.jsx";
+import Contact from "./Components/Photographer/Footer/Contact.jsx";
+import FAQ from "./Components/Photographer/Footer/FAQ.jsx";
+import SurpriseGiftBoxOffer from "./Components/Offers/OfferPage.jsx";
 const App = () => {
   return (
     <Router>
@@ -51,6 +55,11 @@ const App = () => {
         <Route path="/Client/ViewBookings" element={<ViewBookings />} />
         <Route path="/photographer/PhotographerBookings" element={<PhotographerBookings />} />
         <Route path="/photographer/PhotographerSearchBar" element={<PhotographerSearchBar />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/help" element={<HelpSupport/>} />
+        <Route path="/contact" element={<Contact/>} />
+        <Route path="/FAQ" element={<FAQ/>} />
+        <Route path="/OfferPage" element={<SurpriseGiftBoxOffer/>} />
 
         
       </Routes>

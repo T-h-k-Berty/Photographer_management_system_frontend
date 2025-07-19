@@ -19,7 +19,6 @@ import axios from "axios";
 import TopBar from "../Photographer/TopBar/TopBar";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
-import "react-datepicker/dist/react-datepicker.css";
 import Footer from "../Photographer/Footer/Footer";
 
 const eventTypes = [
@@ -37,7 +36,7 @@ const BookingForm = () => {
   const [form, setForm] = useState({
     name: "",
     address: "",
-    date: null,   // Date object for DatePicker
+    date: null,
     time: "",
     eventType: "",
     description: "",
@@ -62,7 +61,6 @@ const BookingForm = () => {
         if (res.data?.userId) {
           const evRes = await axios.get(`http://localhost:5000/api/events/user/${res.data.userId}`);
           if (isMounted) {
-            // assume events have a 'date' field in 'YYYY-MM-DD'
             setBusyDates(evRes.data.map(ev => ev.date));
           }
         }
@@ -85,19 +83,16 @@ const BookingForm = () => {
     return !isBusy && !isPast;
   };
 
-  // Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // Date picker change
   const handleDateChange = (date) => {
-    setForm({ ...form, date }); // date is a Date object
+    setForm({ ...form, date });
     setErrors({ ...errors, date: "" });
   };
 
-  // Validation
   const validate = () => {
     const newErrors = {};
     if (!form.name) newErrors.name = "Name required";
@@ -111,7 +106,6 @@ const BookingForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -120,7 +114,6 @@ const BookingForm = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Please login first!");
-      // Send date as string
       const payload = {
         ...form,
         date: dayjs(form.date).format("YYYY-MM-DD"),
@@ -290,8 +283,7 @@ const BookingForm = () => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    {/* ========== Date Picker With Available Dates ========== */}
-                    <label style={{ fontWeight: 500, color: "#FFD600", display: "block", marginBottom: 4 }}>Date *</label>
+                    {/* === Date Field as Outlined TextField === */}
                     <DatePicker
                       selected={form.date}
                       onChange={handleDateChange}
@@ -299,13 +291,15 @@ const BookingForm = () => {
                       minDate={new Date()}
                       placeholderText="Select available date"
                       dateFormat="yyyy-MM-dd"
-                      wrapperClassName="booking-datepicker-wrapper"
-                      className="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart"
                       popperPlacement="bottom-start"
                       customInput={
                         <TextField
+                          label="Date"
+                          name="date"
+                          required
                           error={!!errors.date}
                           helperText={errors.date}
+                          fullWidth
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">

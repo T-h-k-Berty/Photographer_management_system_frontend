@@ -71,33 +71,7 @@ const Home = () => {
         </Container>
 
         {/* Sort By Section */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 20,
-            right: 20,
-            backgroundColor: "white",
-            borderRadius: "30px",
-            boxShadow: "0 8px 12px rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            px: 2,
-            py: 0.5,
-          }}
-        >
-          <Button
-            variant="text"
-            endIcon={<ArrowDropDownIcon />}
-            sx={{
-              color: "black",
-              fontWeight: "bold",
-              textTransform: "capitalize",
-              fontSize: "1rem",
-            }}
-          >
-            Sort By
-          </Button>
-        </Box>
+      
       </Box>
 
       {/* Popular Photographers Section */}

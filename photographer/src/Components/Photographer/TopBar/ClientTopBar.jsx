@@ -6,7 +6,6 @@ import {
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import InfoIcon from "@mui/icons-material/Info";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -17,6 +16,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+// Notification status visual map
 const statusMap = {
   Accepted: {
     label: "Accepted",
@@ -57,7 +57,7 @@ const getStatusChip = (status) => {
   );
 };
 
-// --- Notification Dialog ---
+// --- Modern Notification Dialog ---
 const NotificationDialog = ({
   open, booking, onClose, notifMessage, loading
 }) => (
@@ -68,12 +68,13 @@ const NotificationDialog = ({
     fullWidth
     PaperProps={{
       sx: {
-        background: "rgba(22,22,22,0.85)",
+        background: "linear-gradient(120deg, #222c 75%, #FFD60044 100%)",
         borderRadius: "28px",
         boxShadow: "0 8px 40px #FFD60066, 0 1.5px 9px #000a",
         overflow: "hidden",
         border: "2.5px solid #FFD600",
-        backdropFilter: "blur(10px)",
+        backdropFilter: "blur(12px)",
+        position: "relative",
       }
     }}
   >
@@ -193,6 +194,9 @@ const NotificationDialog = ({
   </Dialog>
 );
 
+// =========================
+// Main TopBar Component
+// =========================
 const ClientTopBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
@@ -346,49 +350,71 @@ const ClientTopBar = () => {
                 PaperProps={{
                   sx: {
                     mt: 1.3,
-                    minWidth: 350,
-                    borderRadius: 2,
-                    boxShadow: "0px 4px 20px rgba(0,0,0,0.3)",
-                    maxHeight: 340,
+                    minWidth: 375,
+                    borderRadius: 4,
+                    boxShadow: "0px 8px 28px 0 #FFD60033, 0 1px 8px #0007",
+                    maxHeight: 390,
+                    background: "linear-gradient(120deg, #232323 78%, #FFD60022 100%)",
+                    border: "2.2px solid #FFD60044",
+                    overflow: "hidden",
+                    p: 0,
                   },
                 }}
               >
-                <Box sx={{ p: 1 }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: 17, color: "#FFD600", mb: 1 }}>
-                    Booking Status
-                  </Typography>
-                  <Divider sx={{ mb: 1 }} />
-                  {notifLoading ? (
-                    <Box sx={{ textAlign: "center", my: 4 }}>
-                      <CircularProgress size={30} sx={{ color: "#FFD600" }} />
-                    </Box>
-                  ) : notifications.length === 0 ? (
-                    <Typography sx={{ color: "#666", textAlign: "center", mt: 2 }}>
-                      No new booking updates.
+                <Box sx={{
+                  p: 0, m: 0,
+                  background: "linear-gradient(100deg, #181818ee 70%, #FFD60022 120%)",
+                  backdropFilter: "blur(6px)"
+                }}>
+                  <Box sx={{ p: 2 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: 18, color: "#FFD600", mb: 1.2 }}>
+                      Booking Status
                     </Typography>
-                  ) : (
-                    notifications.map((notif) => (
-                      <MenuItem
-                        key={notif.id}
-                        onClick={() => handleNotifSelect(notif)}
-                        sx={{
-                          mb: 1,
-                          alignItems: "flex-start",
-                          whiteSpace: "normal",
-                          "&:hover": { background: "#FFFDE7" },
-                        }}
-                      >
-                        <Box>
-                          <Typography sx={{ fontWeight: 600, color: "#222", fontSize: 15 }}>
-                            {notif.message}
-                          </Typography>
-                          <Typography sx={{ fontSize: 12, color: "#999" }}>
-                            {new Date(notif.createdAt).toLocaleString()}
-                          </Typography>
-                        </Box>
-                      </MenuItem>
-                    ))
-                  )}
+                    <Divider sx={{ mb: 1, borderColor: "#FFD60055" }} />
+                    {notifLoading ? (
+                      <Box sx={{ textAlign: "center", my: 4 }}>
+                        <CircularProgress size={30} sx={{ color: "#FFD600" }} />
+                      </Box>
+                    ) : notifications.length === 0 ? (
+                      <Typography sx={{ color: "#888", textAlign: "center", mt: 2, fontSize: 17 }}>
+                        No new booking updates.
+                      </Typography>
+                    ) : (
+                      notifications.map((notif) => (
+                        <MenuItem
+                          key={notif.id}
+                          onClick={() => handleNotifSelect(notif)}
+                          sx={{
+                            mb: 1,
+                            alignItems: "flex-start",
+                            whiteSpace: "normal",
+                            background: "linear-gradient(100deg, #1c1c1cbb 75%, #FFD60033 120%)",
+                            borderRadius: 3,
+                            boxShadow: "0 3px 13px #FFD60022",
+                            border: "1.5px solid #FFD60022",
+                            my: 1,
+                            mx: 0,
+                            py: 2,
+                            px: 2,
+                            cursor: "pointer",
+                            "&:hover": {
+                              background: "linear-gradient(90deg, #FFD60033 60%, #111 100%)",
+                              boxShadow: "0 7px 18px #FFD60033",
+                            },
+                          }}
+                        >
+                          <Box>
+                            <Typography sx={{ fontWeight: 600, color: "white", fontSize: 15 }}>
+                              {notif.message}
+                            </Typography>
+                            <Typography sx={{ fontSize: 12, color: "#999" }}>
+                              {new Date(notif.createdAt).toLocaleString()}
+                            </Typography>
+                          </Box>
+                        </MenuItem>
+                      ))
+                    )}
+                  </Box>
                 </Box>
               </Menu>
             </Grid>

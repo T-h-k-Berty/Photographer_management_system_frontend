@@ -20,10 +20,10 @@ import PhoneIcon from "@mui/icons-material/Phone";
 const gold = "#FFD600";
 
 const footerLinks = [
-  { label: "About Us", to: "#" },
-  { label: "FAQ", to: "#" },
-  { label: "Help & Support", to: "#" },
-  { label: "Contact", to: "#" },
+  { label: "About Us", to: "/about" },
+  { label: "FAQ", to: "/FAQ" },
+  { label: "Help & Support", to: "/help" },
+  { label: "Contact", to: "/contact" },
 ];
 
 const exploreLinks = [
@@ -202,7 +202,7 @@ const Footer = () => (
         <Box display="flex" alignItems="center">
           <PhoneIcon sx={{ color: gold, mr: 1, fontSize: 23 }} />
           <Typography variant="body2" sx={{ color: "#ccc", fontSize: 16 }}>
-            +94 77 123 4567
+            +94 77 069 2832
           </Typography>
         </Box>
       </Grid>

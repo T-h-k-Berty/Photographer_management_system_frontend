@@ -23,14 +23,19 @@ import { useNavigate } from "react-router-dom";
 import TopBar from "../TopBar/TopBar";
 import RedeemIcon from "@mui/icons-material/Redeem";
 import Footer from "../Footer/Footer";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"; // Calendar icon for FAB
-
-// Calendar & helpers
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Tooltip from "@mui/material/Tooltip";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import dayjs from "dayjs";
+
+// SOCIAL ICONS
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 const ViewPortfolio = () => {
   const [portfolio, setPortfolio] = useState(null);
@@ -76,10 +81,8 @@ const ViewPortfolio = () => {
     if (portfolio?.userId) fetchEvents();
   }, [portfolio]);
 
-  // Set of busy/scheduled dates
   const busyDatesSet = new Set(events.map((ev) => ev.date));
 
-  // Calendar logic
   const tileDisabled = ({ date, view }) => {
     if (view !== "month") return false;
     const d = dayjs(date).format("YYYY-MM-DD");
@@ -138,6 +141,51 @@ const ViewPortfolio = () => {
     cardText: darkMode ? "#eee" : "#333",
     border: darkMode ? "#333" : "#ddd",
     shadow: darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.1)",
+  };
+
+  // SOCIAL LINKS: collect available links in an array of objects for easy mapping
+  const socialLinks = [
+    {
+      name: "Facebook",
+      icon: <FacebookIcon sx={{ color: "#1877f3" }} />,
+      url: portfolio.facebook,
+      base: "https://facebook.com",
+    },
+    {
+      name: "Instagram",
+      icon: <InstagramIcon sx={{ color: "#E1306C" }} />,
+      url: portfolio.instagram,
+      base: "https://instagram.com",
+    },
+    {
+      name: "Twitter",
+      icon: <TwitterIcon sx={{ color: "#1da1f2" }} />,
+      url: portfolio.twitter,
+      base: "https://twitter.com",
+    },
+    {
+      name: "WhatsApp",
+      icon: <WhatsAppIcon sx={{ color: "#25d366" }} />,
+      url: portfolio.whatsapp,
+      base: "https://wa.me",
+    },
+  ];
+
+  // Helper: Clean/validate url
+  const getValidUrl = (url, base) => {
+    if (!url) return null;
+    // For WhatsApp, support both full links and numbers
+    if (base === "https://wa.me") {
+      // If already a link, just return
+      if (url.startsWith("http")) return url;
+      // If it's a phone number, format to WhatsApp link
+      const phone = url.replace(/[^0-9]/g, "");
+      if (phone.length > 6) return `https://wa.me/${phone}`;
+      return null;
+    }
+    // For others, if already has http, return; else, append base
+    if (url.startsWith("http")) return url;
+    return base + (url.startsWith("/") ? url : "/" + url);
   };
 
   return (
@@ -308,6 +356,54 @@ const ViewPortfolio = () => {
                   >
                     {portfolio.description}
                   </Typography>
+
+                  {/* 👇 Social Media Links Below Description */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 2,
+                      mt: 2,
+                    }}
+                  >
+                    {socialLinks.map((link, idx) => {
+                      const validUrl = getValidUrl(link.url, link.base);
+                      if (!validUrl) return null;
+                      return (
+                        <Tooltip key={link.name} title={link.name} arrow>
+                          <IconButton
+                            component="a"
+                            href={validUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                              mx: 1,
+                              background: darkMode ? "#2d2d2d" : "#fff",
+                              borderRadius: 2,
+                              boxShadow: darkMode
+                                ? "0 1px 5px #000"
+                                : "0 1px 6px #ddd",
+                              transition: "all 0.2s",
+                              "&:hover": {
+                                background:
+                                  link.name === "Facebook"
+                                    ? "#1877f3"
+                                    : link.name === "Instagram"
+                                    ? "#E1306C"
+                                    : link.name === "Twitter"
+                                    ? "#1da1f2"
+                                    : "#25d366",
+                                color: "#fff",
+                                transform: "scale(1.15)",
+                              },
+                            }}
+                          >
+                            {link.icon}
+                          </IconButton>
+                        </Tooltip>
+                      );
+                    })}
+                  </Box>
                 </Box>
               </Box>
             </Box>
