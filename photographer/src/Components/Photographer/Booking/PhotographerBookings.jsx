@@ -185,7 +185,7 @@ const PhotographerBookings = () => {
                         <TableCell sx={headerCellStyle}>Location</TableCell>
                         <TableCell sx={headerCellStyle}>Description</TableCell>
                         <TableCell sx={headerCellStyle}>Status</TableCell>
-                        <TableCell sx={headerCellStyle}>Actions</TableCell>
+                        
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -233,48 +233,7 @@ const PhotographerBookings = () => {
                             {b.description || <i style={{ color: "#FFD600" }}>No description</i>}
                           </TableCell>
                           <TableCell>{getStatusChip(b.status)}</TableCell>
-                          <TableCell>
-                            <Grid container spacing={1}>
-                              <Grid item>
-                                <Tooltip title="Accept Booking" arrow>
-                                  <span>
-                                    <Button
-                                      variant="contained"
-                                      color="success"
-                                      size="small"
-                                      disabled={b.status?.toLowerCase() === "accepted" || b.status?.toLowerCase() === "canceled" || actionLoading === b.id}
-                                      startIcon={<CheckCircleIcon />}
-                                      sx={acceptBtnStyle}
-                                      onClick={() => handleBookingAction(b.id, "accept")}
-                                    >
-                                      {actionLoading === b.id && b.status?.toLowerCase() === "pending"
-                                        ? <CircularProgress size={19} sx={{ color: "#181818" }} />
-                                        : "Accept"}
-                                    </Button>
-                                  </span>
-                                </Tooltip>
-                              </Grid>
-                              <Grid item>
-                                <Tooltip title="Cancel Booking" arrow>
-                                  <span>
-                                    <Button
-                                      variant="contained"
-                                      color="error"
-                                      size="small"
-                                      disabled={b.status?.toLowerCase() === "canceled" || b.status?.toLowerCase() === "accepted" || actionLoading === b.id}
-                                      startIcon={<CancelIcon />}
-                                      sx={cancelBtnStyle}
-                                      onClick={() => handleBookingAction(b.id, "cancel")}
-                                    >
-                                      {actionLoading === b.id && b.status?.toLowerCase() === "pending"
-                                        ? <CircularProgress size={19} sx={{ color: "#181818" }} />
-                                        : "Cancel"}
-                                    </Button>
-                                  </span>
-                                </Tooltip>
-                              </Grid>
-                            </Grid>
-                          </TableCell>
+                          
                         </TableRow>
                       ))}
                     </TableBody>

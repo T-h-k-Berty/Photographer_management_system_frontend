@@ -108,7 +108,7 @@ const PopularPhotographers = () => {
           Popular Photographers
         </Typography>
 
-        {/* Single Search Bar */}
+        
         <Box sx={{ maxWidth: 420, margin: "0 auto 36px auto" }}>
           <TextField
             fullWidth
@@ -133,7 +133,7 @@ const PopularPhotographers = () => {
           />
         </Box>
 
-        {/* Grid */}
+    
         <Grid
           container
           spacing={4}

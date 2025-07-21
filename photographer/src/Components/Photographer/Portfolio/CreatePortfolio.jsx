@@ -1,5 +1,3 @@
-// === CreatePortfolio.jsx ===
-
 import {
   TextField,
   Checkbox,
@@ -51,8 +49,14 @@ const inputStyle = {
   "& .Mui-focused .MuiInputLabel-root": { color: "#fff" },
 };
 
-const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
+const urlValidator = {
+  facebook: /^(https?:\/\/)?(www\.)?facebook\.com\/[A-Za-z0-9_.-]+\/?$/,
+  instagram: /^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9_.-]+\/?$/,
+  twitter: /^(https?:\/\/)?(www\.)?twitter\.com\/[A-Za-z0-9_]+\/?$/,
+  whatsapp: /^(https?:\/\/)?(wa\.me\/\d+|api\.whatsapp\.com\/send\?phone=\d+)\/?$/,
+};
 
+const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -92,13 +96,17 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
     twitter: "",
     whatsapp: "",
   });
+  const [errors, setErrors] = useState({});
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
+  // ------- Handlers ---------
   const handlePersonalChange = (e) => {
     const { name, value, files } = e.target;
     setPersonalDetails({
       ...personalDetails,
       [name]: files ? files[0] : value,
     });
+    setErrors({ ...errors, [name]: "" });
   };
 
   const handleEventCheckbox = (eventType) => {
@@ -106,11 +114,13 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
       ? personalDetails.selectedEvents.filter((e) => e !== eventType)
       : [...personalDetails.selectedEvents, eventType];
     setPersonalDetails({ ...personalDetails, selectedEvents: updated });
+    setErrors({ ...errors, selectedEvents: "" });
   };
 
   const handleAddLocation = (event, value) => {
     if (value && !locations.includes(value)) {
       setLocations([...locations, value]);
+      setErrors({ ...errors, locations: "" });
     }
   };
 
@@ -119,7 +129,10 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
   };
 
   const addGallery = () => {
-    setGalleries((prev) => [...prev, { photo1: null, photo2: null, photo3: null, description: "", eventType: "" }]);
+    setGalleries((prev) => [
+      ...prev,
+      { photo1: null, photo2: null, photo3: null, description: "", eventType: "" },
+    ]);
   };
 
   const removeGallery = (index) => {
@@ -127,7 +140,10 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
   };
 
   const addPackage = () => {
-    setPackages((prev) => [...prev, { title: "", description: "", price: "" }]);
+    setPackages((prev) => [
+      ...prev,
+      { title: "", description: "", price: "" },
+    ]);
   };
 
   const removePackage = (index) => {
@@ -137,10 +153,63 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
   const handleSocialLinkChange = (e) => {
     const { name, value } = e.target;
     setSocialLinks({ ...socialLinks, [name]: value });
+    setErrors({ ...errors, [`${name}Link`]: "" });
   };
 
+  // ------------- Validation Logic ---------------
+  const validate = () => {
+    const newErrors = {};
+
+    // Personal Details
+    if (!personalDetails.shopName) newErrors.shopName = "Shop name is required";
+    if (!personalDetails.photographerName) newErrors.photographerName = "Photographer name is required";
+    if (!personalDetails.description) newErrors.description = "Description is required";
+    if (!locations.length) newErrors.locations = "Add at least one location";
+    if (!personalDetails.selectedEvents.length) newErrors.selectedEvents = "Select at least one event type";
+
+    // Social Media links (if filled, must be valid)
+    Object.entries(socialLinks).forEach(([key, val]) => {
+      if (val && urlValidator[key] && !urlValidator[key].test(val)) {
+        newErrors[`${key}Link`] = `Invalid ${key} link`;
+      }
+    });
+
+    // Galleries: If description or eventType is filled, require at least one photo.
+    galleries.forEach((g, idx) => {
+      const gErr = {};
+      if ((g.description || g.eventType) && ![g.photo1, g.photo2, g.photo3].some(Boolean)) {
+        gErr.photos = "At least one photo is required for a described/event gallery";
+      }
+      if ((g.description && !g.eventType) || (!g.description && g.eventType)) {
+        gErr.main = "Fill both description and event type if providing one";
+      }
+      if (Object.keys(gErr).length > 0) {
+        if (!newErrors.galleries) newErrors.galleries = {};
+        newErrors.galleries[idx] = gErr;
+      }
+    });
+
+    // Packages: if any field filled, require all fields
+    packages.forEach((pkg, idx) => {
+      const filled = pkg.title || pkg.description || pkg.price;
+      if (filled && (!pkg.title || !pkg.description || !pkg.price)) {
+        if (!newErrors.packages) newErrors.packages = {};
+        newErrors.packages[idx] = "Fill all package fields";
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ------------- Submit ---------------
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormSubmitted(true);
+
+    if (!validate()) {
+      return;
+    }
 
     const payload = {
       personalDetails,
@@ -195,6 +264,7 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
     }
   };
 
+  // ---------- Render ----------
   return (
     <>
       <TopBar />
@@ -217,6 +287,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                   multiline={field === "description"}
                   rows={field === "description" ? 2 : 1}
                   sx={inputStyle}
+                  error={!!(formSubmitted && errors[field])}
+                  helperText={formSubmitted && errors[field]}
                 />
               </Grid>
             ))}
@@ -258,6 +330,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         </InputAdornment>
                       ),
                     }}
+                    error={!!(formSubmitted && errors.facebookLink)}
+                    helperText={formSubmitted && errors.facebookLink}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -277,6 +351,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         </InputAdornment>
                       ),
                     }}
+                    error={!!(formSubmitted && errors.instagramLink)}
+                    helperText={formSubmitted && errors.instagramLink}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -296,6 +372,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         </InputAdornment>
                       ),
                     }}
+                    error={!!(formSubmitted && errors.twitterLink)}
+                    helperText={formSubmitted && errors.twitterLink}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -315,6 +393,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         </InputAdornment>
                       ),
                     }}
+                    error={!!(formSubmitted && errors.whatsappLink)}
+                    helperText={formSubmitted && errors.whatsappLink}
                   />
                 </Grid>
               </Grid>
@@ -325,7 +405,16 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
               <Autocomplete
                 options={sriLankanLocations}
                 onChange={handleAddLocation}
-                renderInput={(params) => <TextField {...params} label="Add Location" sx={inputStyle} variant="outlined" />}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Add Location"
+                    sx={inputStyle}
+                    variant="outlined"
+                    error={!!(formSubmitted && errors.locations)}
+                    helperText={formSubmitted && errors.locations}
+                  />
+                )}
                 sx={{ mb: 1 }}
               />
               <Box display="flex" flexWrap="wrap" gap={1}>
@@ -357,6 +446,11 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                   />
                 ))}
               </Box>
+              {formSubmitted && errors.selectedEvents && (
+                <Typography color="error" variant="body2" sx={{ ml: 1, mt: 0.5 }}>
+                  {errors.selectedEvents}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         {/* Gallery Section */}
@@ -396,6 +490,9 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                             const updated = [...galleries];
                             updated[idx][`photo${num}`] = file;
                             setGalleries(updated);
+                            if (errors.galleries?.[idx]) {
+                              setErrors({ ...errors, galleries: { ...errors.galleries, [idx]: {} } });
+                            }
                           }}
                           style={{ display: "block", color: "white" }}
                         />
@@ -424,6 +521,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         }}
                         sx={inputStyle}
                         variant="outlined"
+                        error={!!(formSubmitted && errors.galleries?.[idx]?.main)}
+                        helperText={formSubmitted && errors.galleries?.[idx]?.main}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -438,7 +537,16 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         }}
                         sx={inputStyle}
                         variant="outlined"
+                        error={!!(formSubmitted && errors.galleries?.[idx]?.main)}
+                        helperText={formSubmitted && errors.galleries?.[idx]?.main}
                       />
+                    </Grid>
+                    <Grid item xs={12}>
+                      {formSubmitted && errors.galleries?.[idx]?.photos && (
+                        <Typography color="error" variant="body2">
+                          {errors.galleries[idx].photos}
+                        </Typography>
+                      )}
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -485,6 +593,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         }}
                         sx={inputStyle}
                         variant="outlined"
+                        error={!!(formSubmitted && errors.packages?.[idx])}
+                        helperText={formSubmitted && errors.packages?.[idx]}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -501,6 +611,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         }}
                         sx={inputStyle}
                         variant="outlined"
+                        error={!!(formSubmitted && errors.packages?.[idx])}
+                        helperText={formSubmitted && errors.packages?.[idx]}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -515,6 +627,8 @@ const CreatePortfolio = ({ initialData = null, isEdit = false, onSubmit }) => {
                         }}
                         sx={inputStyle}
                         variant="outlined"
+                        error={!!(formSubmitted && errors.packages?.[idx])}
+                        helperText={formSubmitted && errors.packages?.[idx]}
                       />
                     </Grid>
                   </Grid>

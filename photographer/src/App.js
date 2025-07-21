@@ -27,7 +27,7 @@ import AboutUs from "./Components/Photographer/Footer/About Us.jsx";
 import HelpSupport from "./Components/Photographer/Footer/Help and Support.jsx";
 import Contact from "./Components/Photographer/Footer/Contact.jsx";
 import FAQ from "./Components/Photographer/Footer/FAQ.jsx";
-import SurpriseGiftBoxOffer from "./Components/Offers/OfferPage.jsx";
+
 const App = () => {
   return (
     <Router>
@@ -59,9 +59,6 @@ const App = () => {
         <Route path="/help" element={<HelpSupport/>} />
         <Route path="/contact" element={<Contact/>} />
         <Route path="/FAQ" element={<FAQ/>} />
-        <Route path="/OfferPage" element={<SurpriseGiftBoxOffer/>} />
-
-        
       </Routes>
     </Router>
   );

@@ -10,10 +10,8 @@ import Footer from "../Footer/Footer";
 const Home = () => {
   return (
     <>
-      {/* Top Bar */}
+    
       <TopBar />
-
-      {/* Main Content */}
       <Box
         sx={{
           minHeight: "100vh",
@@ -29,7 +27,6 @@ const Home = () => {
           fontFamily: "'Poppins', sans-serif",
         }}
       >
-        {/* Darkened Left Side Overlay */}
         <Box
           sx={{
             position: "absolute",
@@ -40,10 +37,9 @@ const Home = () => {
             background: "rgba(0, 0, 0, 0.7)",
           }}
         ></Box>
-
         <Container maxWidth="lg">
           <Grid container alignItems="center" justifyContent="flex-start" spacing={4}>
-            {/* Left Section - Quote */}
+           
             <Grid item xs={12} md={6} sx={{ zIndex: 1, display: "flex", alignItems: "center" }}>
               <Box px={{ xs: 2, md: 4 }}>
                 <Typography
@@ -54,10 +50,10 @@ const Home = () => {
                     textAlign: "left",
                     color: "white",
                     fontSize: {
-                      xs: "1.5rem", // Small screens
-                      sm: "2rem",   // Medium screens
-                      md: "3rem",   // Large screens
-                      lg: "4rem",   // Extra large screens
+                      xs: "1.5rem", 
+                      sm: "2rem",   
+                      md: "3rem",  
+                      lg: "4rem",   
                     },
                   }}
                 >
@@ -69,12 +65,7 @@ const Home = () => {
             </Grid>
           </Grid>
         </Container>
-
-        {/* Sort By Section */}
-      
       </Box>
-
-      {/* Popular Photographers Section */}
       <PopularPhotographers />
     
     </>
